@@ -2,11 +2,11 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.6.0/schema.json",
   "name": "4d16c9e93bc5aeb2f762",
   "position": {
-    "x": 854.7663213372258,
-    "y": 125.00064587800657,
+    "x": 848,
+    "y": 152,
     "z": 1000,
-    "height": 390.47820807605859,
-    "width": 411.906890226574,
+    "height": 260,
+    "width": 416,
     "tabOrder": 1000
   },
   "visual": {
@@ -36,22 +36,17 @@
           "projections": [
             {
               "field": {
-                "Aggregation": {
+                "Measure": {
                   "Expression": {
-                    "Column": {
-                      "Expression": {
-                        "SourceRef": {
-                          "Entity": "recipe_ingredients"
-                        }
-                      },
-                      "Property": "recipe_id"
+                    "SourceRef": {
+                      "Entity": "MESURES_DAX"
                     }
                   },
-                  "Function": 5
+                  "Property": "Recettes contenant un ingrédient (%)"
                 }
               },
-              "queryRef": "CountNonNull(recipe_ingredients.recipe_id)",
-              "nativeQueryRef": "Nombre de recipe_id"
+              "queryRef": "MESURES_DAX.Recettes contenant un ingrédient (%)",
+              "nativeQueryRef": "Recettes contenant un ingrédient (%)"
             }
           ]
         }
@@ -60,24 +55,18 @@
         "sort": [
           {
             "field": {
-              "Aggregation": {
+              "Measure": {
                 "Expression": {
-                  "Column": {
-                    "Expression": {
-                      "SourceRef": {
-                        "Entity": "recipe_ingredients"
-                      }
-                    },
-                    "Property": "recipe_id"
+                  "SourceRef": {
+                    "Entity": "MESURES_DAX"
                   }
                 },
-                "Function": 5
+                "Property": "Recettes contenant un ingrédient (%)"
               }
             },
             "direction": "Descending"
           }
-        ],
-        "isDefaultSort": true
+        ]
       }
     },
     "objects": {
@@ -103,6 +92,24 @@
                   "Value": "false"
                 }
               }
+            },
+            "fontSize": {
+              "expr": {
+                "Literal": {
+                  "Value": "10D"
+                }
+              }
+            },
+            "labelColor": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "Literal": {
+                      "Value": "'#66736B'"
+                    }
+                  }
+                }
+              }
             }
           }
         }
@@ -114,6 +121,52 @@
               "expr": {
                 "Literal": {
                   "Value": "false"
+                }
+              }
+            },
+            "fontSize": {
+              "expr": {
+                "Literal": {
+                  "Value": "10D"
+                }
+              }
+            },
+            "labelColor": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "Literal": {
+                      "Value": "'#66736B'"
+                    }
+                  }
+                }
+              }
+            },
+            "labelDisplayUnits": {
+              "expr": {
+                "Literal": {
+                  "Value": "1D"
+                }
+              }
+            },
+            "labelPrecision": {
+              "expr": {
+                "Literal": {
+                  "Value": "1L"
+                }
+              }
+            },
+            "titleText": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Part de toutes les recettes (%)'"
+                }
+              }
+            },
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
                 }
               }
             }
@@ -134,11 +187,31 @@
               "solid": {
                 "color": {
                   "expr": {
-                    "ThemeDataColor": {
-                      "ColorId": 0,
-                      "Percent": -0.6
+                    "Literal": {
+                      "Value": "'#29352F'"
                     }
                   }
+                }
+              }
+            },
+            "fontSize": {
+              "expr": {
+                "Literal": {
+                  "Value": "10D"
+                }
+              }
+            },
+            "labelDisplayUnits": {
+              "expr": {
+                "Literal": {
+                  "Value": "1D"
+                }
+              }
+            },
+            "labelPrecision": {
+              "expr": {
+                "Literal": {
+                  "Value": "1L"
                 }
               }
             }
@@ -152,9 +225,8 @@
               "solid": {
                 "color": {
                   "expr": {
-                    "ThemeDataColor": {
-                      "ColorId": 4,
-                      "Percent": -0.5
+                    "Literal": {
+                      "Value": "'#527A64'"
                     }
                   }
                 }
@@ -171,7 +243,21 @@
             "show": {
               "expr": {
                 "Literal": {
-                  "Value": "false"
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'% de toutes les recettes · plusieurs ingrédients possibles'"
+                }
+              }
+            },
+            "fontSize": {
+              "expr": {
+                "Literal": {
+                  "Value": "9D"
                 }
               }
             }
@@ -184,7 +270,7 @@
             "text": {
               "expr": {
                 "Literal": {
-                  "Value": "'Ingrédients les plus utilisés'"
+                  "Value": "'Les ingrédients les plus présents'"
                 }
               }
             },
@@ -192,6 +278,31 @@
               "expr": {
                 "Literal": {
                   "Value": "12D"
+                }
+              }
+            },
+            "fontFamily": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Segoe UI'"
+                }
+              }
+            },
+            "fontColor": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "Literal": {
+                      "Value": "'#29352F'"
+                    }
+                  }
+                }
+              }
+            },
+            "alignment": {
+              "expr": {
+                "Literal": {
+                  "Value": "'left'"
                 }
               }
             }
@@ -213,9 +324,16 @@
                 "color": {
                   "expr": {
                     "Literal": {
-                      "Value": "'#D94F3D'"
+                      "Value": "'#ECE9E2'"
                     }
                   }
+                }
+              }
+            },
+            "radius": {
+              "expr": {
+                "Literal": {
+                  "Value": "10D"
                 }
               }
             }
@@ -281,6 +399,37 @@
             }
           }
         }
+      ],
+      "background": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "color": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "Literal": {
+                      "Value": "'#FFFFFF'"
+                    }
+                  }
+                }
+              }
+            },
+            "transparency": {
+              "expr": {
+                "Literal": {
+                  "Value": "0D"
+                }
+              }
+            }
+          }
+        }
       ]
     },
     "drillFilterOtherVisuals": true
@@ -315,6 +464,11 @@
                         "Name": "r1",
                         "Entity": "recipe_ingredients",
                         "Type": 0
+                      },
+                      {
+                        "Name": "pctMeasures",
+                        "Entity": "MESURES_DAX",
+                        "Type": 0
                       }
                     ],
                     "Select": [
@@ -334,18 +488,13 @@
                       {
                         "Direction": 2,
                         "Expression": {
-                          "Aggregation": {
+                          "Measure": {
                             "Expression": {
-                              "Column": {
-                                "Expression": {
-                                  "SourceRef": {
-                                    "Source": "r1"
-                                  }
-                                },
-                                "Property": "recipe_id"
+                              "SourceRef": {
+                                "Source": "pctMeasures"
                               }
                             },
-                            "Function": 5
+                            "Property": "Recettes contenant un ingrédient (%)"
                           }
                         }
                       }
@@ -409,18 +558,13 @@
         "name": "f3ecc670528045174898",
         "ordinal": 1,
         "field": {
-          "Aggregation": {
+          "Measure": {
             "Expression": {
-              "Column": {
-                "Expression": {
-                  "SourceRef": {
-                    "Entity": "recipes"
-                  }
-                },
-                "Property": "recipe_id"
+              "SourceRef": {
+                "Entity": "MESURES_DAX"
               }
             },
-            "Function": 5
+            "Property": "Recettes contenant un ingrédient (%)"
           }
         },
         "type": "Advanced",

@@ -5,8 +5,8 @@
     "x": 1136,
     "y": 128,
     "z": 1000,
-    "height": 47.999999999999993,
-    "width": 95.999999999999986,
+    "height": 47.99999999999999,
+    "width": 95.99999999999999,
     "tabOrder": 23000
   },
   "visual": {
@@ -19,7 +19,10 @@
               {
                 "textRuns": [
                   {
-                    "value": "True"
+                    "value": "True",
+                    "textStyle": {
+                      "fontFamily": "Segoe UI"
+                    }
                   }
                 ]
               }

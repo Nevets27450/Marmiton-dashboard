@@ -2,11 +2,11 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.6.0/schema.json",
   "name": "bc359fac3a425e791839",
   "position": {
-    "x": 660.71769964089185,
-    "y": 111.90534011935826,
+    "x": 600,
+    "y": 168,
     "z": 3000,
-    "height": 79.762316893585137,
-    "width": 619.05081768155628,
+    "height": 112,
+    "width": 608,
     "tabOrder": 1000
   },
   "visual": {
@@ -19,11 +19,25 @@
               {
                 "textRuns": [
                   {
-                    "value": "Marmiton Web Scraping Analyse",
+                    "value": "Marmiton",
                     "textStyle": {
+                      "fontFamily": "Segoe UI",
+                      "fontSize": "30pt",
                       "fontWeight": "bold",
-                      "fontSize": "32pt",
-                      "color": "#000000"
+                      "color": "#29352F"
+                    }
+                  }
+                ]
+              },
+              {
+                "textRuns": [
+                  {
+                    "value": "Les recettes en un regard",
+                    "textStyle": {
+                      "fontFamily": "Segoe UI",
+                      "fontSize": "30pt",
+                      "fontWeight": "bold",
+                      "color": "#29352F"
                     }
                   }
                 ]
@@ -387,6 +401,26 @@
               "expr": {
                 "Literal": {
                   "Value": "'@reportTitle'"
+                }
+              }
+            },
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "subTitle": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
                 }
               }
             }

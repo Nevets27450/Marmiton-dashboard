@@ -2,11 +2,11 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.6.0/schema.json",
   "name": "4fe1bb42006aa9d10d3a",
   "position": {
-    "x": 463.76240301065263,
-    "y": 480.3394470100074,
+    "x": 48,
+    "y": 152,
     "z": 27000,
-    "height": 47.777777777777779,
-    "width": 240,
+    "height": 40,
+    "width": 1184,
     "tabOrder": 27000
   },
   "visual": {
@@ -19,7 +19,13 @@
               {
                 "textRuns": [
                   {
-                    "value": "Orphée HODONOU"
+                    "value": "Une collecte Python, des données préparées et une exploration dans Power BI.",
+                    "textStyle": {
+                      "fontFamily": "Segoe UI",
+                      "fontSize": "14pt",
+                      "fontWeight": "normal",
+                      "color": "#66736B"
+                    }
                   }
                 ]
               }
@@ -29,34 +35,26 @@
       ]
     },
     "visualContainerObjects": {
-      "padding": [
+      "title": [
         {
           "properties": {
-            "left": {
+            "show": {
               "expr": {
                 "Literal": {
-                  "Value": "20D"
+                  "Value": "false"
                 }
               }
-            },
-            "top": {
+            }
+          }
+        }
+      ],
+      "subTitle": [
+        {
+          "properties": {
+            "show": {
               "expr": {
                 "Literal": {
-                  "Value": "12D"
-                }
-              }
-            },
-            "bottom": {
-              "expr": {
-                "Literal": {
-                  "Value": "12D"
-                }
-              }
-            },
-            "right": {
-              "expr": {
-                "Literal": {
-                  "Value": "20D"
+                  "Value": "false"
                 }
               }
             }
@@ -69,7 +67,7 @@
             "show": {
               "expr": {
                 "Literal": {
-                  "Value": "true"
+                  "Value": "false"
                 }
               }
             }
@@ -82,20 +80,41 @@
             "show": {
               "expr": {
                 "Literal": {
-                  "Value": "true"
+                  "Value": "false"
                 }
               }
             }
           }
         }
       ],
-      "title": [
+      "padding": [
         {
           "properties": {
-            "text": {
+            "left": {
               "expr": {
                 "Literal": {
-                  "Value": "'@reportType'"
+                  "Value": "0D"
+                }
+              }
+            },
+            "right": {
+              "expr": {
+                "Literal": {
+                  "Value": "0D"
+                }
+              }
+            },
+            "top": {
+              "expr": {
+                "Literal": {
+                  "Value": "0D"
+                }
+              }
+            },
+            "bottom": {
+              "expr": {
+                "Literal": {
+                  "Value": "0D"
                 }
               }
             }

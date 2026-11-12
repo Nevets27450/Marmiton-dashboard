@@ -2,11 +2,11 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.6.0/schema.json",
   "name": "32e2110247ed10979e08",
   "position": {
-    "x": 464.42906967731932,
-    "y": 392.33944701000769,
+    "x": 48,
+    "y": 640,
     "z": 4000,
-    "height": 48,
-    "width": 72,
+    "height": 32,
+    "width": 240,
     "tabOrder": 15000
   },
   "visual": {
@@ -19,7 +19,13 @@
               {
                 "textRuns": [
                   {
-                    "value": "1.0"
+                    "value": "1.1",
+                    "textStyle": {
+                      "fontFamily": "Segoe UI",
+                      "fontSize": "15pt",
+                      "fontWeight": "bold",
+                      "color": "#29352F"
+                    }
                   }
                 ]
               }
@@ -29,34 +35,26 @@
       ]
     },
     "visualContainerObjects": {
-      "padding": [
+      "title": [
         {
           "properties": {
-            "left": {
+            "show": {
               "expr": {
                 "Literal": {
-                  "Value": "20D"
+                  "Value": "false"
                 }
               }
-            },
-            "top": {
+            }
+          }
+        }
+      ],
+      "subTitle": [
+        {
+          "properties": {
+            "show": {
               "expr": {
                 "Literal": {
-                  "Value": "12D"
-                }
-              }
-            },
-            "bottom": {
-              "expr": {
-                "Literal": {
-                  "Value": "12D"
-                }
-              }
-            },
-            "right": {
-              "expr": {
-                "Literal": {
-                  "Value": "20D"
+                  "Value": "false"
                 }
               }
             }
@@ -69,7 +67,7 @@
             "show": {
               "expr": {
                 "Literal": {
-                  "Value": "true"
+                  "Value": "false"
                 }
               }
             }
@@ -82,20 +80,41 @@
             "show": {
               "expr": {
                 "Literal": {
-                  "Value": "true"
+                  "Value": "false"
                 }
               }
             }
           }
         }
       ],
-      "title": [
+      "padding": [
         {
           "properties": {
-            "text": {
+            "left": {
               "expr": {
                 "Literal": {
-                  "Value": "'@reportVersion'"
+                  "Value": "0D"
+                }
+              }
+            },
+            "right": {
+              "expr": {
+                "Literal": {
+                  "Value": "0D"
+                }
+              }
+            },
+            "top": {
+              "expr": {
+                "Literal": {
+                  "Value": "0D"
+                }
+              }
+            },
+            "bottom": {
+              "expr": {
+                "Literal": {
+                  "Value": "0D"
                 }
               }
             }

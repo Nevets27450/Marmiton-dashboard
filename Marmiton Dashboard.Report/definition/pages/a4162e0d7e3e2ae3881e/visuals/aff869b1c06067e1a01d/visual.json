@@ -6,7 +6,7 @@
     "y": 0,
     "z": 6000,
     "height": 32,
-    "width": 64,
+    "width": 40,
     "tabOrder": 3000
   },
   "visual": {
@@ -136,6 +136,19 @@
               "expr": {
                 "Literal": {
                   "Value": "'Back'"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "border": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
                 }
               }
             }

@@ -1,34 +1,69 @@
 table MESURES_DAX
 	lineageTag: 2ac9b0a6-eebe-46ec-bab5-b97191c2ecb4
 
-	measure Avg_ingredient = COUNT(recipe_ingredients[ingredient_name])/COUNT(recipes[recipe_id])
+	/// Lignes ingrédients du contexte courant / recettes du contexte courant. Un filtre ingrédient ne filtre pas automatiquement les recettes.
+	measure Avg_ingredient = DIVIDE(COUNTROWS(recipe_ingredients), COUNTROWS(recipes))
+		formatString: 0.00
+		displayFolder: Recettes
 		lineageTag: 5a286cb8-74e6-4963-b648-27df2ce81be8
 
 		annotation PBI_FormatHint = {"isGeneralNumber":true}
 
+	/// Moyenne des notes × LOG10(1 + nombre déclaré de commentaires). Le total est le score du contexte agrégé.
 	measure Recipe_Score =
 			
 			AVERAGE(recipes[rating_value]) * LOG(1 + SUM(recipes[comment_block]))
+		formatString: 0.00
+		displayFolder: Classement
 		lineageTag: 9a29d03a-4bb2-4af9-9bb6-e0fdd14d8317
 
 		annotation PBI_FormatHint = {"isGeneralNumber":true}
 
-	measure Rank_Recipe =
-			
-			RANKX(
-			    FILTER(
-			        ALL(recipes),
-			        recipes[rating_value] = 5
-			    ),
-			    [Recipe_Score],
-			    ,
-			    DESC,
-			    DENSE
-			)
+	/// Rang global dense parmi les recettes notées 5 ; vide pour les autres et les totaux. Population indépendante des filtres recipes.
+	measure Rank_Recipe = VAR Eligible = HASONEVALUE(recipes[recipe_id]) && SELECTEDVALUE(recipes[rating_value]) = 5 RETURN IF(Eligible, RANKX(FILTER(ALL(recipes), recipes[rating_value] = 5), [Recipe_Score], , DESC, DENSE), BLANK())
 		formatString: 0
+		displayFolder: Classement
 		lineageTag: 2693e2d5-3738-4c00-b074-6d9dbf936114
 
+	measure 'Nombre de recettes' = COUNTROWS(recipes)
+		formatString: #,0
+		displayFolder: Recettes
+		lineageTag: 9848972b-a9c0-4664-80df-93f5c60d7284
+
+	measure 'Note moyenne' = AVERAGE(recipes[rating_value])
+		formatString: 0.00
+		displayFolder: Recettes
+		lineageTag: b08855a7-6ffc-4dc5-8cec-1052ef9c4ad3
+
+	measure 'Durée moyenne (min)' = AVERAGE(recipes[total_time_min])
+		formatString: 0.0
+		displayFolder: Recettes
+		lineageTag: 0ded0639-dd84-41ce-a705-6655e36baf5f
+
+	measure 'Nombre de commentaires extraits' = COUNTROWS(recipe_comments)
+		formatString: #,0
+		displayFolder: Commentaires
+		lineageTag: 6414b4a8-7e69-48dc-a5c6-1c696fd80474
+
+	measure 'Score moyen des recettes' = AVERAGEX(VALUES(recipes[recipe_id]), [Recipe_Score])
+		formatString: 0.00
+		displayFolder: Classement
+		lineageTag: 3fb3df27-183b-459b-8c68-3f8f87b0f82d
+
+	/// Recettes de la tranche et du contexte courant / totalité des recettes du modèle. Le dénominateur ignore les filtres du rapport.
+	measure 'Part des recettes par durée' = DIVIDE(DISTINCTCOUNT(recipes[recipe_id]), CALCULATE(DISTINCTCOUNT(recipes[recipe_id]), REMOVEFILTERS()))
+		formatString: 0.0%
+		displayFolder: Pourcentages
+		lineageTag: c767f16e-59ff-428f-95fc-0231d73f76d5
+
+	/// Recettes distinctes contenant chaque ingrédient / totalité des recettes du modèle. Une recette compte une seule fois par ingrédient. Les parts des ingrédients ne s'additionnent pas à 100 %.
+	measure 'Recettes contenant un ingrédient (%)' = DIVIDE(DISTINCTCOUNT(recipe_ingredients[recipe_id]), CALCULATE(DISTINCTCOUNT(recipes[recipe_id]), REMOVEFILTERS()))
+		formatString: 0.0%
+		displayFolder: Pourcentages
+		lineageTag: 1e23ff82-1466-4eb0-b3e1-04150f1ce53d
+
 	column Column
+		isHidden
 		formatString: 0
 		lineageTag: 6cf07d45-cf39-4a93-b226-9e53aa945bec
 		summarizeBy: sum

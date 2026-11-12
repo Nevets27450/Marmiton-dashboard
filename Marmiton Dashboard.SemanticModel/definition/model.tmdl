@@ -10,7 +10,7 @@ annotation PBI_QueryOrder = ["recipes","recipe_ingredients","recipe_comments"]
 
 annotation __PBI_TimeIntelligenceEnabled = 1
 
-annotation PBI_ProTooling = ["WebModelingEdit"]
+annotation PBI_ProTooling = ["WebModelingEdit","MCP-PBIModeling","DevMode"]
 
 ref table recipes
 ref table recipe_ingredients

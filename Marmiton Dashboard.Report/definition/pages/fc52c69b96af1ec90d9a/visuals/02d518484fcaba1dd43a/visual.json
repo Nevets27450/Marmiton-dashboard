@@ -2,11 +2,11 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.6.0/schema.json",
   "name": "02d518484fcaba1dd43a",
   "position": {
-    "x": 884.52837987960834,
-    "y": 445.2403957940424,
+    "x": 600,
+    "y": 560,
     "z": 6000,
-    "height": 52.381223034593226,
-    "width": 367.85904358384789,
+    "height": 48,
+    "width": 608,
     "tabOrder": 5000
   },
   "visual": {
@@ -19,18 +19,12 @@
               {
                 "textRuns": [
                   {
-                    "value": "3. ",
+                    "value": "Données issues de Marmiton · Collecte Python · Analyse Power BI",
                     "textStyle": {
-                      "fontSize": "13.3333px"
-                    }
-                  },
-                  {
-                    "value": "Sources des données et contacts"
-                  },
-                  {
-                    "value": " ",
-                    "textStyle": {
-                      "fontSize": "13.3333px"
+                      "fontFamily": "Segoe UI",
+                      "fontSize": "10pt",
+                      "fontWeight": "normal",
+                      "color": "#66736B"
                     }
                   }
                 ]
@@ -80,7 +74,7 @@
             "top": {
               "expr": {
                 "Literal": {
-                  "Value": "10D"
+                  "Value": "0D"
                 }
               }
             },
@@ -95,6 +89,32 @@
               "expr": {
                 "Literal": {
                   "Value": "0D"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "subTitle": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
                 }
               }
             }

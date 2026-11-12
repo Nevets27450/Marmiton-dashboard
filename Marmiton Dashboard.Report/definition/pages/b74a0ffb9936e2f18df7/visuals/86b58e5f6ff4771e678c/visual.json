@@ -2,11 +2,11 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.6.0/schema.json",
   "name": "86b58e5f6ff4771e678c",
   "position": {
-    "x": 14.285788100343607,
-    "y": 216.66778618854471,
+    "x": 16,
+    "y": 244,
     "z": 4000,
-    "height": 86,
-    "width": 241.667915364146,
+    "height": 80,
+    "width": 240,
     "tabOrder": 4000
   },
   "visual": {
@@ -82,9 +82,8 @@
               "solid": {
                 "color": {
                   "expr": {
-                    "ThemeDataColor": {
-                      "ColorId": 3,
-                      "Percent": 0
+                    "Literal": {
+                      "Value": "'#D94F3D'"
                     }
                   }
                 }
@@ -93,7 +92,7 @@
             "fontSize": {
               "expr": {
                 "Literal": {
-                  "Value": "25D"
+                  "Value": "26D"
                 }
               }
             },
@@ -143,7 +142,25 @@
             "fontSize": {
               "expr": {
                 "Literal": {
-                  "Value": "12D"
+                  "Value": "11D"
+                }
+              }
+            },
+            "fontFamily": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Segoe UI'"
+                }
+              }
+            },
+            "fontColor": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "Literal": {
+                      "Value": "'#29352F'"
+                    }
+                  }
                 }
               }
             }
@@ -158,9 +175,80 @@
                 "color": {
                   "expr": {
                     "Literal": {
-                      "Value": "'#D94F3D'"
+                      "Value": "'#ECE9E2'"
                     }
                   }
+                }
+              }
+            },
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "radius": {
+              "expr": {
+                "Literal": {
+                  "Value": "10D"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "background": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "color": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "Literal": {
+                      "Value": "'#FFFFFF'"
+                    }
+                  }
+                }
+              }
+            },
+            "transparency": {
+              "expr": {
+                "Literal": {
+                  "Value": "0D"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "dropShadow": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "subTitle": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
                 }
               }
             }

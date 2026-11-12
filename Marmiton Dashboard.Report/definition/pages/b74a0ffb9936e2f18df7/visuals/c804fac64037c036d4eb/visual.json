@@ -2,11 +2,11 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.6.0/schema.json",
   "name": "c804fac64037c036d4eb",
   "position": {
-    "x": 218.59073322278766,
-    "y": 448.11100310671469,
+    "x": 224,
+    "y": 470,
     "z": 18000,
-    "height": 39.034059504069226,
-    "width": 39,
+    "height": 24,
+    "width": 24,
     "tabOrder": 18000
   },
   "visual": {
@@ -102,6 +102,32 @@
               "expr": {
                 "Literal": {
                   "Value": "'Il s''agit du nombre de recettes qui ont reçu des notes sur le site Marmiton.'"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "border": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "background": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
                 }
               }
             }

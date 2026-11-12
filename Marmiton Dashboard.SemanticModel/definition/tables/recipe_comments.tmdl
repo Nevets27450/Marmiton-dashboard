@@ -3,6 +3,7 @@ table recipe_comments
 
 	column recipe_id
 		dataType: int64
+		isHidden
 		formatString: 0
 		lineageTag: c710d093-2198-437b-9597-4175a5d376c5
 		summarizeBy: none
@@ -20,9 +21,10 @@ table recipe_comments
 
 	column comment_index
 		dataType: int64
+		isHidden
 		formatString: 0
 		lineageTag: 44ba8664-d96f-4ae6-95c2-b63553077a2a
-		summarizeBy: sum
+		summarizeBy: none
 		sourceColumn: comment_index
 
 		annotation SummarizationSetBy = Automatic
@@ -67,6 +69,7 @@ table recipe_comments
 
 	column comment_date_is_valid_format
 		dataType: boolean
+		isHidden
 		formatString: """TRUE"";""TRUE"";""FALSE"""
 		lineageTag: 9a5a39f7-5b9a-4b28-a581-100cea9f0803
 		summarizeBy: none

@@ -2,11 +2,11 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.6.0/schema.json",
   "name": "a9479e8100b45e9210a2",
   "position": {
-    "x": 218.59073322278766,
-    "y": 354.4292602969486,
+    "x": 224,
+    "y": 378,
     "z": 17000,
-    "height": 39.034059504069226,
-    "width": 39,
+    "height": 24,
+    "width": 24,
     "tabOrder": 17000
   },
   "visual": {
@@ -102,6 +102,32 @@
               "expr": {
                 "Literal": {
                   "Value": "'Il s''agit de la moyenne d''ingrédients par recette obtenue en faisant le nombre total d''ingrédients divisé par le nombre de recettes.'"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "border": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "background": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
                 }
               }
             }

@@ -2,11 +2,11 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.6.0/schema.json",
   "name": "1a41bc00836e10027c3a",
   "position": {
-    "x": 660.71769964089185,
-    "y": 191.66765701294338,
+    "x": 600,
+    "y": 296,
     "z": 2000,
-    "height": 128.57209290309245,
-    "width": 558.336218255096,
+    "height": 72,
+    "width": 608,
     "tabOrder": 2000
   },
   "visual": {
@@ -19,10 +19,12 @@
               {
                 "textRuns": [
                   {
-                    "value": "Ce rapport présente l’analyse des données extraites du site Marmiton via Web Scraping (Python), incluant le traitement, la structuration et la visualisation des recettes, ingrédients et interactions utilisateurs.",
+                    "value": "Comparez les durées, découvrez les ingrédients les plus présents et explorez les recettes appréciées des utilisateurs.",
                     "textStyle": {
+                      "fontFamily": "Segoe UI",
                       "fontSize": "14pt",
-                      "color": "#000000"
+                      "fontWeight": "normal",
+                      "color": "#29352F"
                     }
                   }
                 ]
@@ -386,6 +388,26 @@
               "expr": {
                 "Literal": {
                   "Value": "'@description'"
+                }
+              }
+            },
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "subTitle": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
                 }
               }
             }

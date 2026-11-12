@@ -2,33 +2,40 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.6.0/schema.json",
   "name": "9a29e8fc4e9093204d34",
   "position": {
-    "x": 463.76240301065263,
-    "y": 448.11722478778535,
+    "x": 840,
+    "y": 376,
     "z": 28000,
-    "height": 32.222222222222221,
-    "width": 143.33333333333334,
+    "height": 32,
+    "width": 360,
     "tabOrder": 26000
   },
   "visual": {
-    "visualType": "actionButton",
+    "visualType": "textbox",
     "objects": {
-      "icon": [
+      "general": [
         {
           "properties": {
-            "shapeType": {
-              "expr": {
-                "Literal": {
-                  "Value": "'blank'"
-                }
+            "paragraphs": [
+              {
+                "textRuns": [
+                  {
+                    "value": "Auteur du rapport · Analyste des données",
+                    "textStyle": {
+                      "fontFamily": "Segoe UI",
+                      "fontSize": "11pt",
+                      "fontWeight": "normal",
+                      "color": "#66736B"
+                    }
+                  }
+                ]
               }
-            }
-          },
-          "selector": {
-            "id": "default"
+            ]
           }
         }
-      ],
-      "outline": [
+      ]
+    },
+    "visualContainerObjects": {
+      "title": [
         {
           "properties": {
             "show": {
@@ -41,97 +48,73 @@
           }
         }
       ],
-      "text": [
+      "subTitle": [
         {
           "properties": {
-            "bold": {
-              "expr": {
-                "Literal": {
-                  "Value": "false"
-                }
-              }
-            },
-            "text": {
-              "expr": {
-                "Literal": {
-                  "Value": "'Data Analyst'"
-                }
-              }
-            },
-            "horizontalAlignment": {
-              "expr": {
-                "Literal": {
-                  "Value": "'left'"
-                }
-              }
-            }
-          },
-          "selector": {
-            "id": "default"
-          }
-        },
-        {
-          "properties": {
-            "fontColor": {
-              "solid": {
-                "color": {
-                  "expr": {
-                    "ThemeDataColor": {
-                      "ColorId": 1,
-                      "Percent": 0
-                    }
-                  }
-                }
-              }
-            },
-            "bold": {
+            "show": {
               "expr": {
                 "Literal": {
                   "Value": "false"
                 }
               }
             }
-          },
-          "selector": {
-            "id": "hover"
-          }
-        },
-        {
-          "properties": {
-            "bold": {
-              "expr": {
-                "Literal": {
-                  "Value": "false"
-                }
-              }
-            },
-            "fontColor": {
-              "solid": {
-                "color": {
-                  "expr": {
-                    "ThemeDataColor": {
-                      "ColorId": 1,
-                      "Percent": 0
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "selector": {
-            "id": "selected"
           }
         }
-      ]
-    },
-    "visualContainerObjects": {
-      "title": [
+      ],
+      "background": [
         {
           "properties": {
-            "text": {
+            "show": {
               "expr": {
                 "Literal": {
-                  "Value": "'Label Type'"
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "border": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "padding": [
+        {
+          "properties": {
+            "left": {
+              "expr": {
+                "Literal": {
+                  "Value": "0D"
+                }
+              }
+            },
+            "right": {
+              "expr": {
+                "Literal": {
+                  "Value": "0D"
+                }
+              }
+            },
+            "top": {
+              "expr": {
+                "Literal": {
+                  "Value": "0D"
+                }
+              }
+            },
+            "bottom": {
+              "expr": {
+                "Literal": {
+                  "Value": "0D"
                 }
               }
             }

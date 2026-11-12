@@ -2,11 +2,11 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.6.0/schema.json",
   "name": "2bfd61d129587aaa4525",
   "position": {
-    "x": 218,
-    "y": 541.79274591648084,
+    "x": 224,
+    "y": 562,
     "z": 19000,
-    "height": 39.034059504069226,
-    "width": 39,
+    "height": 24,
+    "width": 24,
     "tabOrder": 19000
   },
   "visual": {
@@ -102,6 +102,32 @@
               "expr": {
                 "Literal": {
                   "Value": "'Il s''agit du temps moyen de préparation d''une recette.Il s''agit du temps moyen de préparation d''une recette.'"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "border": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "background": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
                 }
               }
             }

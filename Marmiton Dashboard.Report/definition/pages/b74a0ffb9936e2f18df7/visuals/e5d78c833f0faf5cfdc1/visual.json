@@ -2,11 +2,11 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.6.0/schema.json",
   "name": "e5d78c833f0faf5cfdc1",
   "position": {
-    "x": 261,
-    "y": 124.90899041302153,
+    "x": 272,
+    "y": 152,
     "z": 6000,
-    "height": 390.34059504069228,
-    "width": 588.63361732136389,
+    "height": 260,
+    "width": 560,
     "tabOrder": 6000
   },
   "visual": {
@@ -36,22 +36,17 @@
           "projections": [
             {
               "field": {
-                "Aggregation": {
+                "Measure": {
                   "Expression": {
-                    "Column": {
-                      "Expression": {
-                        "SourceRef": {
-                          "Entity": "recipes"
-                        }
-                      },
-                      "Property": "recipe_id"
+                    "SourceRef": {
+                      "Entity": "MESURES_DAX"
                     }
                   },
-                  "Function": 5
+                  "Property": "Part des recettes par durée"
                 }
               },
-              "queryRef": "CountNonNull(recipes.recipe_id)",
-              "nativeQueryRef": "Nombre de recipe_id1"
+              "queryRef": "MESURES_DAX.Part des recettes par durée",
+              "nativeQueryRef": "Part des recettes par durée"
             }
           ]
         }
@@ -60,24 +55,18 @@
         "sort": [
           {
             "field": {
-              "Aggregation": {
+              "Column": {
                 "Expression": {
-                  "Column": {
-                    "Expression": {
-                      "SourceRef": {
-                        "Entity": "recipes"
-                      }
-                    },
-                    "Property": "recipe_id"
+                  "SourceRef": {
+                    "Entity": "Table_Intervalle"
                   }
                 },
-                "Function": 5
+                "Property": "Intervalle"
               }
             },
-            "direction": "Descending"
+            "direction": "Ascending"
           }
-        ],
-        "isDefaultSort": true
+        ]
       }
     },
     "objects": {
@@ -87,7 +76,7 @@
             "show": {
               "expr": {
                 "Literal": {
-                  "Value": "true"
+                  "Value": "false"
                 }
               }
             },
@@ -121,14 +110,14 @@
             "titleText": {
               "expr": {
                 "Literal": {
-                  "Value": "'Number of shops'"
+                  "Value": "'Part de toutes les recettes (%)'"
                 }
               }
             },
             "show": {
               "expr": {
                 "Literal": {
-                  "Value": "false"
+                  "Value": "true"
                 }
               }
             },
@@ -143,6 +132,38 @@
               "expr": {
                 "Literal": {
                   "Value": "false"
+                }
+              }
+            },
+            "fontSize": {
+              "expr": {
+                "Literal": {
+                  "Value": "10D"
+                }
+              }
+            },
+            "labelColor": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "Literal": {
+                      "Value": "'#66736B'"
+                    }
+                  }
+                }
+              }
+            },
+            "labelDisplayUnits": {
+              "expr": {
+                "Literal": {
+                  "Value": "1D"
+                }
+              }
+            },
+            "labelPrecision": {
+              "expr": {
+                "Literal": {
+                  "Value": "1L"
                 }
               }
             }
@@ -179,6 +200,24 @@
                   "Value": "false"
                 }
               }
+            },
+            "fontSize": {
+              "expr": {
+                "Literal": {
+                  "Value": "10D"
+                }
+              }
+            },
+            "labelColor": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "Literal": {
+                      "Value": "'#66736B'"
+                    }
+                  }
+                }
+              }
             }
           }
         }
@@ -210,14 +249,32 @@
             "fontSize": {
               "expr": {
                 "Literal": {
-                  "Value": "8D"
+                  "Value": "10D"
                 }
               }
             },
             "labelDisplayUnits": {
               "expr": {
                 "Literal": {
-                  "Value": "1000D"
+                  "Value": "1D"
+                }
+              }
+            },
+            "color": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "Literal": {
+                      "Value": "'#29352F'"
+                    }
+                  }
+                }
+              }
+            },
+            "labelPrecision": {
+              "expr": {
+                "Literal": {
+                  "Value": "1L"
                 }
               }
             }
@@ -225,25 +282,6 @@
         }
       ],
       "dataPoint": [
-        {
-          "properties": {
-            "fill": {
-              "solid": {
-                "color": {
-                  "expr": {
-                    "ThemeDataColor": {
-                      "ColorId": 3,
-                      "Percent": -0.25
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "selector": {
-            "metadata": "CountNonNull(study_characteristics.session_id)"
-          }
-        },
         {
           "properties": {
             "fill": {
@@ -417,7 +455,7 @@
             "text": {
               "expr": {
                 "Literal": {
-                  "Value": "'Distribution des recettes par durée de préparation'"
+                  "Value": "'Répartition des recettes par durée totale (%)'"
                 }
               }
             },
@@ -425,6 +463,31 @@
               "expr": {
                 "Literal": {
                   "Value": "12D"
+                }
+              }
+            },
+            "fontFamily": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Segoe UI'"
+                }
+              }
+            },
+            "fontColor": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "Literal": {
+                      "Value": "'#29352F'"
+                    }
+                  }
+                }
+              }
+            },
+            "alignment": {
+              "expr": {
+                "Literal": {
+                  "Value": "'left'"
                 }
               }
             }
@@ -437,7 +500,21 @@
             "show": {
               "expr": {
                 "Literal": {
-                  "Value": "false"
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'% de toutes les recettes · tranches en minutes'"
+                }
+              }
+            },
+            "fontSize": {
+              "expr": {
+                "Literal": {
+                  "Value": "10D"
                 }
               }
             }
@@ -526,9 +603,16 @@
                 "color": {
                   "expr": {
                     "Literal": {
-                      "Value": "'#D94F3D'"
+                      "Value": "'#ECE9E2'"
                     }
                   }
+                }
+              }
+            },
+            "radius": {
+              "expr": {
+                "Literal": {
+                  "Value": "10D"
                 }
               }
             }
@@ -555,6 +639,37 @@
               "expr": {
                 "Literal": {
                   "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "background": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "color": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "Literal": {
+                      "Value": "'#FFFFFF'"
+                    }
+                  }
+                }
+              }
+            },
+            "transparency": {
+              "expr": {
+                "Literal": {
+                  "Value": "0D"
                 }
               }
             }

@@ -37,7 +37,7 @@ table recipes
 	column rating_value
 		dataType: double
 		lineageTag: 7187fd9b-6ab5-416c-b2ff-871f954ab9f5
-		summarizeBy: sum
+		summarizeBy: none
 		sourceColumn: rating_value
 
 		annotation SummarizationSetBy = Automatic
@@ -48,7 +48,7 @@ table recipes
 		dataType: int64
 		formatString: 0
 		lineageTag: 7c48dbcd-c50d-40db-b2fc-27246215bb74
-		summarizeBy: sum
+		summarizeBy: none
 		sourceColumn: servings_value
 
 		annotation SummarizationSetBy = Automatic
@@ -66,7 +66,7 @@ table recipes
 		dataType: int64
 		formatString: 0
 		lineageTag: 3beb9e66-b701-4a87-9077-428039aa399e
-		summarizeBy: sum
+		summarizeBy: none
 		sourceColumn: steps_count
 
 		annotation SummarizationSetBy = Automatic
@@ -75,7 +75,7 @@ table recipes
 		dataType: int64
 		formatString: 0
 		lineageTag: dd3aca6d-9e75-40d5-9798-b4b46e752db1
-		summarizeBy: sum
+		summarizeBy: none
 		sourceColumn: ingredients_count
 
 		annotation SummarizationSetBy = Automatic
@@ -84,7 +84,7 @@ table recipes
 		dataType: int64
 		formatString: 0
 		lineageTag: 936ff137-7551-4ae5-b1cd-ec962aacc2ac
-		summarizeBy: sum
+		summarizeBy: none
 		sourceColumn: total_time_min
 
 		annotation SummarizationSetBy = Automatic
@@ -93,13 +93,15 @@ table recipes
 		dataType: int64
 		formatString: 0
 		lineageTag: 1fdd2cac-7087-4ce8-8ac8-baa1e6988dbe
-		summarizeBy: sum
+		summarizeBy: none
 		sourceColumn: prep_time_min
 
 		annotation SummarizationSetBy = Automatic
 
+	/// Champ vide dans les données actuelles, conservé pour compatibilité.
 	column rest_time_min
 		dataType: string
+		isHidden
 		lineageTag: 22feb661-ede3-406a-abce-92e18e37dc24
 		summarizeBy: none
 		sourceColumn: rest_time_min
@@ -110,7 +112,7 @@ table recipes
 		dataType: int64
 		formatString: 0
 		lineageTag: d90a994b-2322-4ade-b3ba-0c90cd33c246
-		summarizeBy: sum
+		summarizeBy: none
 		sourceColumn: cook_time_min
 
 		annotation SummarizationSetBy = Automatic
@@ -138,14 +140,11 @@ table recipes
 				  Source = Csv.Document(Web.Contents("https://ucergyfr-my.sharepoint.com/personal/orphee-steven-sedjro_hodonou_etu_cyu_fr/Documents/Applications/Microsoft Power Query/Uploaded Files/recipes 2.csv"), [Delimiter = ",", Columns = 24, Encoding = 65001, QuoteStyle = QuoteStyle.None]),
 				  #"En-têtes promus" = Table.PromoteHeaders(Source, [PromoteAllScalars = true]),
 				  #"Type de colonne changé" = Table.TransformColumnTypes(#"En-têtes promus", {{"recipe_id", Int64.Type}, {"url", type text}, {"title", type text}, {"image_url", type text}, {"rating_raw", type text}, {"rating_value", type text}, {"difficulty", type text}, {"cost", type text}, {"servings_raw", Int64.Type}, {"servings_value", Int64.Type}, {"comment_block", Int64.Type}, {"comments_extracted_count", Int64.Type}, {"steps_count", Int64.Type}, {"ingredients_count", Int64.Type}, {"title_len", Int64.Type}, {"total_time_raw", type text}, {"prep_time_raw", type text}, {"rest_time_raw", type text}, {"cook_time_raw", type text}, {"total_time_min", Int64.Type}, {"prep_time_min", Int64.Type}, {"rest_time_min", type text}, {"cook_time_min", Int64.Type}, {"avg_step_len_chars", type text}}, "fr"),
-				    #"Duplication de la colonne" = Table.AddColumn(#"Type de colonne changé", "rating_value - Copier", each [rating_value], type text),
-				    #"Type modifié avec paramètres régionaux1" = Table.TransformColumnTypes(#"Duplication de la colonne", {{"rating_value", type number}}, "en-US"),
-				    #"Colonnes supprimées" = Table.RemoveColumns(#"Type modifié avec paramètres régionaux1",{"rating_value - Copier"}),
-				    #"Lignes vides supprimées" = Table.SelectRows(#"Colonnes supprimées", each not List.IsEmpty(List.RemoveMatchingItems(Record.FieldValues(_), {"", null}))),
-				    #"Colonnes supprimées1" = Table.RemoveColumns(#"Lignes vides supprimées",{"rating_raw", "difficulty", "cost", "servings_raw", "comments_extracted_count", "title_len", "total_time_raw", "prep_time_raw", "rest_time_raw", "cook_time_raw", "avg_step_len_chars"}),
-				    #"Type modifié" = Table.TransformColumnTypes(#"Colonnes supprimées1",{{"title", type text}})
+				    #"Type modifié avec paramètres régionaux1" = Table.TransformColumnTypes(#"Type de colonne changé", {{"rating_value", type number}}, "en-US"),
+				    #"Lignes vides supprimées" = Table.SelectRows(#"Type modifié avec paramètres régionaux1", each not List.IsEmpty(List.RemoveMatchingItems(Record.FieldValues(_), {"", null}))),
+				    #"Colonnes supprimées1" = Table.RemoveColumns(#"Lignes vides supprimées",{"rating_raw", "difficulty", "cost", "servings_raw", "comments_extracted_count", "title_len", "total_time_raw", "prep_time_raw", "rest_time_raw", "cook_time_raw", "avg_step_len_chars"})
 				in
-				    #"Type modifié"
+				    #"Colonnes supprimées1"
 
 	annotation PBI_NavigationStepName = Navigation
 

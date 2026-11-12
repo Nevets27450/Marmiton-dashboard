@@ -3,6 +3,7 @@ table recipe_ingredients
 
 	column recipe_id
 		dataType: int64
+		isHidden
 		formatString: 0
 		lineageTag: b859a28b-be17-4684-978c-5d4a31854539
 		summarizeBy: none
@@ -20,9 +21,10 @@ table recipe_ingredients
 
 	column ingredient_index
 		dataType: int64
+		isHidden
 		formatString: 0
 		lineageTag: 425096d4-1f8b-4799-9f26-bbc1ef8751fa
-		summarizeBy: sum
+		summarizeBy: none
 		sourceColumn: ingredient_index
 
 		annotation SummarizationSetBy = Automatic
@@ -59,11 +61,12 @@ table recipe_ingredients
 
 		annotation SummarizationSetBy = Automatic
 
+	/// Quantité reconstruite depuis quantity_raw, décimales et fractions comprises. Ne pas additionner des unités différentes.
 	column quantity_value
-		dataType: int64
-		formatString: 0
+		dataType: double
+		formatString: 0.###
 		lineageTag: 576ea48e-a4c5-4335-87cf-cee2b68751ee
-		summarizeBy: sum
+		summarizeBy: none
 		sourceColumn: quantity_value
 
 		annotation SummarizationSetBy = Automatic
@@ -82,9 +85,10 @@ table recipe_ingredients
 				let
 				  Source = Csv.Document(Web.Contents("https://ucergyfr-my.sharepoint.com/personal/orphee-steven-sedjro_hodonou_etu_cyu_fr/Documents/Applications/Microsoft Power Query/Uploaded Files/recipe_ingredients 2.csv"), [Delimiter = ",", Columns = 9, Encoding = 65001, QuoteStyle = QuoteStyle.None]),
 				  #"En-têtes promus" = Table.PromoteHeaders(Source, [PromoteAllScalars = true]),
-				  #"Type de colonne changé" = Table.TransformColumnTypes(#"En-têtes promus", {{"recipe_id", Int64.Type}, {"recipe_url", type text}, {"ingredient_index", Int64.Type}, {"ingredient_name", type text}, {"ingredient_complement", type text}, {"quantity_raw", type text}, {"unit_raw", type text}, {"quantity_value", Int64.Type}, {"ingredient_name_norm_simple", type text}}, "fr")
-				in
-				  #"Type de colonne changé"
+				  #"Type de colonne changé" = Table.TransformColumnTypes(#"En-têtes promus", {{"recipe_id", Int64.Type}, {"recipe_url", type text}, {"ingredient_index", Int64.Type}, {"ingredient_name", type text}, {"ingredient_complement", type text}, {"quantity_raw", type text}, {"unit_raw", type text}, {"quantity_value", type number}, {"ingredient_name_norm_simple", type text}}, "fr"),
+				 Removed = Table.RemoveColumns(#"Type de colonne changé", {"quantity_value"}),
+				 Fixed = Table.AddColumn(Removed, "quantity_value", each let t = if [quantity_raw] = null then "" else Text.Trim([quantity_raw]), p = Text.Split(Text.Replace(t,",","."),"/") in try (if t = "" then null else if List.Count(p)=1 then Number.FromText(p{0},"en-US") else if List.Count(p)=2 then (let d=Number.FromText(p{1},"en-US") in if d=0 then null else Number.FromText(p{0},"en-US")/d) else null) otherwise null, type number)
+				in Fixed
 
 	annotation PBI_NavigationStepName = Navigation
 

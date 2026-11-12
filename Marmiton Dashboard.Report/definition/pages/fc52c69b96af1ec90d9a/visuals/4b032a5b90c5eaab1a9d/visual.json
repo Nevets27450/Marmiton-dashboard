@@ -2,11 +2,11 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.6.0/schema.json",
   "name": "4b032a5b90c5eaab1a9d",
   "position": {
-    "x": 884.52837987960834,
-    "y": 385.71627870927739,
+    "x": 600,
+    "y": 480,
     "z": 5000,
-    "height": 52.381223034593226,
-    "width": 325.00167928281707,
+    "height": 56,
+    "width": 608,
     "tabOrder": 4000
   },
   "visual": {
@@ -19,13 +19,13 @@
               {
                 "textRuns": [
                   {
-                    "value": "2. ",
+                    "value": "L’analyse réunit les indicateurs clés, les filtres et le classement des recettes.",
                     "textStyle": {
-                      "fontSize": "10pt"
+                      "fontFamily": "Segoe UI",
+                      "fontSize": "12pt",
+                      "fontWeight": "normal",
+                      "color": "#29352F"
                     }
-                  },
-                  {
-                    "value": "Synthèse des analyses principales."
                   }
                 ]
               }
@@ -74,7 +74,7 @@
             "top": {
               "expr": {
                 "Literal": {
-                  "Value": "10D"
+                  "Value": "0D"
                 }
               }
             },
@@ -89,6 +89,32 @@
               "expr": {
                 "Literal": {
                   "Value": "0D"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "subTitle": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
                 }
               }
             }

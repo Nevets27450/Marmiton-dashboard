@@ -2,11 +2,11 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.6.0/schema.json",
   "name": "b6dbaff35247b00d4b4e",
   "position": {
-    "x": 82.143281576975738,
-    "y": 110.71485777766296,
+    "x": 112,
+    "y": 160,
     "z": 11000,
-    "height": 452.38328984421423,
-    "width": 434.52605471878474,
+    "height": 368,
+    "width": 368,
     "tabOrder": 6000
   },
   "visual": {
@@ -33,7 +33,7 @@
             "cornerRadius": {
               "expr": {
                 "Literal": {
-                  "Value": "100L"
+                  "Value": "32L"
                 }
               }
             },
