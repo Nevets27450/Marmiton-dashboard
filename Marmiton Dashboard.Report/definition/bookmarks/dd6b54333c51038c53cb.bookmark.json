@@ -1,0 +1,64 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/bookmark/2.0.0/schema.json",
+  "displayName": "Guide",
+  "name": "dd6b54333c51038c53cb",
+  "options": {
+    "targetVisualNames": []
+  },
+  "explorationState": {
+    "version": "1.3",
+    "activeSection": "be5e725bad6396406cec",
+    "sections": {
+      "be5e725bad6396406cec": {
+        "visualContainers": {},
+        "visualContainerGroups": {
+          "cb45d3864032a7676416": {
+            "children": {
+              "0d4a7382690e938b85f3": {
+                "isHidden": false
+              }
+            }
+          },
+          "1cfbcff013158b8665fc": {
+            "isHidden": false,
+            "children": {
+              "e8b65729f4246d62516b": {
+                "isHidden": false
+              },
+              "042b173e259f0cd82352": {
+                "isHidden": true
+              }
+            }
+          },
+          "eedfa9b14776ee8aeb7c": {
+            "isHidden": true
+          }
+        }
+      }
+    },
+    "objects": {
+      "merge": {
+        "outspacePane": [
+          {
+            "properties": {
+              "expanded": {
+                "expr": {
+                  "Literal": {
+                    "Value": "false"
+                  }
+                }
+              },
+              "visible": {
+                "expr": {
+                  "Literal": {
+                    "Value": "true"
+                  }
+                }
+              }
+            }
+          }
+        ]
+      }
+    }
+  }
+}

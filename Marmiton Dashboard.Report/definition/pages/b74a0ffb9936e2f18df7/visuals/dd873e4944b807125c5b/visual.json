@@ -1,0 +1,138 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.6.0/schema.json",
+  "name": "dd873e4944b807125c5b",
+  "position": {
+    "x": 14.285788100343607,
+    "y": 584.5268297723926,
+    "z": 11000,
+    "height": 126,
+    "width": 241.667915364146,
+    "tabOrder": 11000
+  },
+  "visual": {
+    "visualType": "simpleImageEBC4593F96F1425FB3D84C5BF02B5075",
+    "query": {
+      "queryState": {
+        "imageURL": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "recipes"
+                    }
+                  },
+                  "Property": "image_url"
+                }
+              },
+              "queryRef": "recipes.image_url",
+              "nativeQueryRef": "image_url"
+            }
+          ]
+        }
+      }
+    },
+    "objects": {
+      "altTextSettings": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "imageSettings": [
+        {
+          "properties": {
+            "imageAlignment": {
+              "expr": {
+                "Literal": {
+                  "Value": "'mcenter'"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Image'"
+                }
+              }
+            },
+            "alignment": {
+              "expr": {
+                "Literal": {
+                  "Value": "'center'"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "subTitle": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "spacing": [
+        {
+          "properties": {
+            "customizeSpacing": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "border": [
+        {
+          "properties": {
+            "color": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "Literal": {
+                      "Value": "'#D94F3D'"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "drillFilterOtherVisuals": true
+  }
+}

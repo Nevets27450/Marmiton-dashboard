@@ -1,0 +1,86 @@
+{
+  "version": "1.1.0",
+  "diagrams": [
+    {
+      "ordinal": 0,
+      "scrollPosition": {
+        "x": 0,
+        "y": 0
+      },
+      "nodes": [
+        {
+          "location": {
+            "x": 936.82830493017923,
+            "y": 289.11477091011182
+          },
+          "nodeIndex": "recipe_comments",
+          "nodeLineageTag": "ff10dcaa-615f-428e-a972-572f5c6caea0",
+          "size": {
+            "height": 296,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 75.421244585246569,
+            "y": 289.11477091011182
+          },
+          "nodeIndex": "recipe_ingredients",
+          "nodeLineageTag": "a1523b6b-d500-4a37-beb0-92e48dbf04ed",
+          "size": {
+            "height": 296,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 489.23411950730321,
+            "y": 79.611313728871366
+          },
+          "nodeIndex": "recipes",
+          "nodeLineageTag": "79f0a222-bbb8-47d8-a4dc-a5db9d0824a5",
+          "size": {
+            "height": 300,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 852.38305001469382,
+            "y": 65.422348979922532
+          },
+          "nodeIndex": "MESURES_DAX",
+          "size": {
+            "height": 200,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 439.01736732466077,
+            "y": 641.5568562283338
+          },
+          "nodeIndex": "Table_Intervalle",
+          "nodeLineageTag": "619c3f09-ed67-4ddb-b0dd-ee72bffbb770",
+          "size": {
+            "height": 200,
+            "width": 234
+          },
+          "zIndex": 0
+        }
+      ],
+      "name": "Toutes les tables",
+      "zoomValue": 47.731909222619883,
+      "pinKeyFieldsToTop": false,
+      "showExtraHeaderInfo": false,
+      "hideKeyFieldsWhenCollapsed": false,
+      "tablesLocked": false
+    }
+  ],
+  "selectedDiagram": "Toutes les tables",
+  "defaultDiagram": "Toutes les tables"
+}

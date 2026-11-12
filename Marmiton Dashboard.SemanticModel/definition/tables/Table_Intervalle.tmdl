@@ -1,0 +1,62 @@
+table Table_Intervalle
+	lineageTag: 619c3f09-ed67-4ddb-b0dd-ee72bffbb770
+
+	column Intervalle
+		lineageTag: 6e9decfa-2981-4e15-9fc4-897443e2c16e
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Intervalle]
+
+		annotation SummarizationSetBy = Automatic
+
+	column Min_Borne
+		formatString: 0
+		lineageTag: d5ff7454-445f-4496-8d13-67b489daab81
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Min_Borne]
+
+		annotation SummarizationSetBy = Automatic
+
+	column Max_Borne
+		formatString: 0
+		lineageTag: ab123c50-1353-4337-94a6-e65202678238
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Max_Borne]
+
+		annotation SummarizationSetBy = Automatic
+
+	column Temps_Order =
+			
+			SWITCH(
+			    TRUE(),
+			    Table_Intervalle[Intervalle] = "0-15", 1,
+			    Table_Intervalle[Intervalle] = "16-30", 2,
+			    Table_Intervalle[Intervalle] = "31-45", 3,
+			   Table_Intervalle[Intervalle] = "+1h", 4
+			)
+		formatString: 0
+		lineageTag: 0d7bd146-6501-4115-9c09-255c50f5dabe
+		summarizeBy: none
+
+		annotation SummarizationSetBy = Automatic
+
+	partition Table_Intervalle = calculated
+		mode: import
+		source =
+				
+				DATATABLE(
+				    "Intervalle", STRING,
+				    "Min_Borne", INTEGER,
+				    "Max_Borne", INTEGER,
+				    {
+				        {"0-15", 0, 15},
+				        {"16-30", 16, 30},
+				        {"31-45", 31, 45},
+				        {"+1h", 60, 9999}
+				    }
+				)
+
+	annotation PBI_Id = f83293efa0e44cdc88f5520c474d4786
+

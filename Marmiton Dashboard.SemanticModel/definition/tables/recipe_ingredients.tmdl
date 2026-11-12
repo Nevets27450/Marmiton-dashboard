@@ -1,0 +1,92 @@
+table recipe_ingredients
+	lineageTag: a1523b6b-d500-4a37-beb0-92e48dbf04ed
+
+	column recipe_id
+		dataType: int64
+		formatString: 0
+		lineageTag: b859a28b-be17-4684-978c-5d4a31854539
+		summarizeBy: none
+		sourceColumn: recipe_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column recipe_url
+		dataType: string
+		lineageTag: 1653daa6-2af6-44f4-887f-8b3c8a98443a
+		summarizeBy: none
+		sourceColumn: recipe_url
+
+		annotation SummarizationSetBy = Automatic
+
+	column ingredient_index
+		dataType: int64
+		formatString: 0
+		lineageTag: 425096d4-1f8b-4799-9f26-bbc1ef8751fa
+		summarizeBy: sum
+		sourceColumn: ingredient_index
+
+		annotation SummarizationSetBy = Automatic
+
+	column ingredient_name
+		dataType: string
+		lineageTag: 3503f3bb-cf65-4d9d-a4bb-05bb0f4cdc60
+		summarizeBy: none
+		sourceColumn: ingredient_name
+
+		annotation SummarizationSetBy = Automatic
+
+	column ingredient_complement
+		dataType: string
+		lineageTag: f5f8e78c-b068-429a-91ce-3a6d33519f2d
+		summarizeBy: none
+		sourceColumn: ingredient_complement
+
+		annotation SummarizationSetBy = Automatic
+
+	column quantity_raw
+		dataType: string
+		lineageTag: a960efd4-9e1f-4731-b473-c2c3ed42ff74
+		summarizeBy: none
+		sourceColumn: quantity_raw
+
+		annotation SummarizationSetBy = Automatic
+
+	column unit_raw
+		dataType: string
+		lineageTag: 487dbaf0-9127-4b8c-ba5c-286381e40100
+		summarizeBy: none
+		sourceColumn: unit_raw
+
+		annotation SummarizationSetBy = Automatic
+
+	column quantity_value
+		dataType: int64
+		formatString: 0
+		lineageTag: 576ea48e-a4c5-4335-87cf-cee2b68751ee
+		summarizeBy: sum
+		sourceColumn: quantity_value
+
+		annotation SummarizationSetBy = Automatic
+
+	column ingredient_name_norm_simple
+		dataType: string
+		lineageTag: e847aae1-fac2-4487-b0b3-565679881600
+		summarizeBy: none
+		sourceColumn: ingredient_name_norm_simple
+
+		annotation SummarizationSetBy = Automatic
+
+	partition recipe_ingredients = m
+		mode: import
+		source =
+				let
+				  Source = Csv.Document(Web.Contents("https://ucergyfr-my.sharepoint.com/personal/orphee-steven-sedjro_hodonou_etu_cyu_fr/Documents/Applications/Microsoft Power Query/Uploaded Files/recipe_ingredients 2.csv"), [Delimiter = ",", Columns = 9, Encoding = 65001, QuoteStyle = QuoteStyle.None]),
+				  #"En-têtes promus" = Table.PromoteHeaders(Source, [PromoteAllScalars = true]),
+				  #"Type de colonne changé" = Table.TransformColumnTypes(#"En-têtes promus", {{"recipe_id", Int64.Type}, {"recipe_url", type text}, {"ingredient_index", Int64.Type}, {"ingredient_name", type text}, {"ingredient_complement", type text}, {"quantity_raw", type text}, {"unit_raw", type text}, {"quantity_value", Int64.Type}, {"ingredient_name_norm_simple", type text}}, "fr")
+				in
+				  #"Type de colonne changé"
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

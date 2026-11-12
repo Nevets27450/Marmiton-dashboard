@@ -1,0 +1,71 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/bookmark/2.0.0/schema.json",
+  "displayName": "Viz",
+  "name": "4e85591ea50c3110a6e2",
+  "options": {
+    "targetVisualNames": []
+  },
+  "explorationState": {
+    "version": "1.3",
+    "activeSection": "cd5c66951ee602001fea",
+    "sections": {
+      "cd5c66951ee602001fea": {
+        "visualContainers": {},
+        "visualContainerGroups": {
+          "fe56e7e0b1d34856c27e": {
+            "isHidden": false,
+            "children": {
+              "80522cdcd1c6c101ecdd": {
+                "isHidden": false
+              },
+              "8dc8a4a74e2a7098e0cd": {
+                "isHidden": false
+              },
+              "01320c4db386791c56db": {
+                "isHidden": false
+              }
+            }
+          },
+          "df98624b92e14e5c8637": {
+            "isHidden": true
+          },
+          "8d9d274c148e3491caea": {
+            "isHidden": false,
+            "children": {
+              "cedf47bb0aa74e4f5006": {
+                "isHidden": true
+              },
+              "2f4d2fc36aa8c5746fc2": {
+                "isHidden": false
+              }
+            }
+          }
+        }
+      }
+    },
+    "objects": {
+      "merge": {
+        "outspacePane": [
+          {
+            "properties": {
+              "expanded": {
+                "expr": {
+                  "Literal": {
+                    "Value": "false"
+                  }
+                }
+              },
+              "visible": {
+                "expr": {
+                  "Literal": {
+                    "Value": "true"
+                  }
+                }
+              }
+            }
+          }
+        ]
+      }
+    }
+  }
+}

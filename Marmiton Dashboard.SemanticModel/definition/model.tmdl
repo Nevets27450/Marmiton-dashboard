@@ -1,0 +1,24 @@
+model Model
+	culture: fr-FR
+	defaultPowerBIDataSourceVersion: powerBI_V3
+	sourceQueryCulture: fr-FR
+	dataAccessOptions
+		legacyRedirects
+		returnErrorValuesAsNull
+
+annotation PBI_QueryOrder = ["recipes","recipe_ingredients","recipe_comments"]
+
+annotation __PBI_TimeIntelligenceEnabled = 1
+
+annotation PBI_ProTooling = ["WebModelingEdit"]
+
+ref table recipes
+ref table recipe_ingredients
+ref table recipe_comments
+ref table DateTableTemplate_fde1d2fe-9195-49b0-8440-bf7242df4bfb
+ref table LocalDateTable_946dee72-019b-4ad6-99e0-4d223834fddc
+ref table MESURES_DAX
+ref table Table_Intervalle
+
+ref cultureInfo fr-FR
+

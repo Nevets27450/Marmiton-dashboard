@@ -1,0 +1,17 @@
+relationship 55b35888-f80e-4507-a6ec-bcef7e642e80
+	joinOnDateBehavior: datePartOnly
+	fromColumn: recipe_comments.comment_date_raw
+	toColumn: LocalDateTable_946dee72-019b-4ad6-99e0-4d223834fddc.Date
+
+relationship AutoDetected_2a260ff7-e786-49cd-bfc8-375618cab57a
+	fromColumn: recipe_ingredients.recipe_id
+	toColumn: recipes.recipe_id
+
+relationship AutoDetected_6eea81bd-a819-4e7f-aad4-eee0ade65913
+	fromColumn: recipe_comments.recipe_id
+	toColumn: recipes.recipe_id
+
+relationship a968969d-6b47-ffc4-0d4e-125b149b727a
+	fromColumn: recipes.Intervalle
+	toColumn: Table_Intervalle.Intervalle
+

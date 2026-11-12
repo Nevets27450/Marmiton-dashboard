@@ -1,0 +1,100 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/page/2.0.0/schema.json",
+  "name": "b74a0ffb9936e2f18df7",
+  "displayName": "Aperçu",
+  "displayOption": "FitToPage",
+  "height": 720,
+  "width": 1280,
+  "objects": {
+    "outspacePane": [
+      {
+        "properties": {
+          "width": {
+            "expr": {
+              "Literal": {
+                "Value": "313L"
+              }
+            }
+          }
+        }
+      }
+    ]
+  },
+  "visualInteractions": [
+    {
+      "source": "dd873e4944b807125c5b",
+      "target": "3c94357c994b5f99d9fb",
+      "type": "NoFilter"
+    },
+    {
+      "source": "dd873e4944b807125c5b",
+      "target": "86b58e5f6ff4771e678c",
+      "type": "NoFilter"
+    },
+    {
+      "source": "dd873e4944b807125c5b",
+      "target": "3f44cbf220861613bba0",
+      "type": "NoFilter"
+    },
+    {
+      "source": "dd873e4944b807125c5b",
+      "target": "b08c9579e0cca4475886",
+      "type": "NoFilter"
+    },
+    {
+      "source": "dd873e4944b807125c5b",
+      "target": "039c5353d7367936ab0b",
+      "type": "NoFilter"
+    },
+    {
+      "source": "039c5353d7367936ab0b",
+      "target": "e5d78c833f0faf5cfdc1",
+      "type": "NoFilter"
+    },
+    {
+      "source": "039c5353d7367936ab0b",
+      "target": "f38564af1a52c852386c",
+      "type": "NoFilter"
+    },
+    {
+      "source": "039c5353d7367936ab0b",
+      "target": "4d16c9e93bc5aeb2f762",
+      "type": "NoFilter"
+    },
+    {
+      "source": "039c5353d7367936ab0b",
+      "target": "b58539c70220133dd49c",
+      "type": "NoFilter"
+    },
+    {
+      "source": "039c5353d7367936ab0b",
+      "target": "96f6a4d186efaba03c82",
+      "type": "NoFilter"
+    },
+    {
+      "source": "039c5353d7367936ab0b",
+      "target": "86b58e5f6ff4771e678c",
+      "type": "NoFilter"
+    },
+    {
+      "source": "039c5353d7367936ab0b",
+      "target": "3c94357c994b5f99d9fb",
+      "type": "NoFilter"
+    },
+    {
+      "source": "039c5353d7367936ab0b",
+      "target": "3f44cbf220861613bba0",
+      "type": "NoFilter"
+    },
+    {
+      "source": "039c5353d7367936ab0b",
+      "target": "b08c9579e0cca4475886",
+      "type": "NoFilter"
+    },
+    {
+      "source": "039c5353d7367936ab0b",
+      "target": "a5087812f55896c77e3a",
+      "type": "NoFilter"
+    }
+  ]
+}

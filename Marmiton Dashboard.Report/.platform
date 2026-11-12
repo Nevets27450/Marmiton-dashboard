@@ -1,0 +1,11 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/gitIntegration/platformProperties/2.0.0/schema.json",
+  "metadata": {
+    "type": "Report",
+    "displayName": "Marmiton Dashboard"
+  },
+  "config": {
+    "version": "2.0",
+    "logicalId": "4387adb2-ba55-4f6a-984c-6c27a38d1632"
+  }
+}

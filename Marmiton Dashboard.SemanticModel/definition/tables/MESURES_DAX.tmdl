@@ -1,0 +1,45 @@
+table MESURES_DAX
+	lineageTag: 2ac9b0a6-eebe-46ec-bab5-b97191c2ecb4
+
+	measure Avg_ingredient = COUNT(recipe_ingredients[ingredient_name])/COUNT(recipes[recipe_id])
+		lineageTag: 5a286cb8-74e6-4963-b648-27df2ce81be8
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure Recipe_Score =
+			
+			AVERAGE(recipes[rating_value]) * LOG(1 + SUM(recipes[comment_block]))
+		lineageTag: 9a29d03a-4bb2-4af9-9bb6-e0fdd14d8317
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure Rank_Recipe =
+			
+			RANKX(
+			    FILTER(
+			        ALL(recipes),
+			        recipes[rating_value] = 5
+			    ),
+			    [Recipe_Score],
+			    ,
+			    DESC,
+			    DENSE
+			)
+		formatString: 0
+		lineageTag: 2693e2d5-3738-4c00-b074-6d9dbf936114
+
+	column Column
+		formatString: 0
+		lineageTag: 6cf07d45-cf39-4a93-b226-9e53aa945bec
+		summarizeBy: sum
+		isNameInferred
+		sourceColumn: [Column]
+
+		annotation SummarizationSetBy = Automatic
+
+	partition MESURES_DAX = calculated
+		mode: import
+		source = Row("Column", BLANK())
+
+	annotation PBI_Id = d7ef6a459edf4aa88b811eb6378af1fe
+

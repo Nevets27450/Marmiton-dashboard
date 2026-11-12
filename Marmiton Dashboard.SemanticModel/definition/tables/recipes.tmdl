@@ -1,0 +1,153 @@
+table recipes
+	lineageTag: 79f0a222-bbb8-47d8-a4dc-a5db9d0824a5
+
+	column recipe_id
+		dataType: int64
+		formatString: 0
+		lineageTag: 70850e47-cf3a-470d-8dbe-251b1dafd424
+		summarizeBy: none
+		sourceColumn: recipe_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column url
+		dataType: string
+		lineageTag: db666b64-2205-47d0-997f-1f699e0215dd
+		summarizeBy: none
+		sourceColumn: url
+
+		annotation SummarizationSetBy = Automatic
+
+	column title
+		dataType: string
+		lineageTag: 26dbea1a-b9f8-4910-8168-e913a77c8522
+		summarizeBy: none
+		sourceColumn: title
+
+		annotation SummarizationSetBy = Automatic
+
+	column image_url
+		dataType: string
+		lineageTag: 21dd47e7-0db1-46b4-9cbb-035019a07595
+		summarizeBy: none
+		sourceColumn: image_url
+
+		annotation SummarizationSetBy = Automatic
+
+	column rating_value
+		dataType: double
+		lineageTag: 7187fd9b-6ab5-416c-b2ff-871f954ab9f5
+		summarizeBy: sum
+		sourceColumn: rating_value
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column servings_value
+		dataType: int64
+		formatString: 0
+		lineageTag: 7c48dbcd-c50d-40db-b2fc-27246215bb74
+		summarizeBy: sum
+		sourceColumn: servings_value
+
+		annotation SummarizationSetBy = Automatic
+
+	column comment_block
+		dataType: int64
+		formatString: 0
+		lineageTag: f69b2aa2-3242-4eda-a1a4-e6d5f67fc3c9
+		summarizeBy: sum
+		sourceColumn: comment_block
+
+		annotation SummarizationSetBy = Automatic
+
+	column steps_count
+		dataType: int64
+		formatString: 0
+		lineageTag: 3beb9e66-b701-4a87-9077-428039aa399e
+		summarizeBy: sum
+		sourceColumn: steps_count
+
+		annotation SummarizationSetBy = Automatic
+
+	column ingredients_count
+		dataType: int64
+		formatString: 0
+		lineageTag: dd3aca6d-9e75-40d5-9798-b4b46e752db1
+		summarizeBy: sum
+		sourceColumn: ingredients_count
+
+		annotation SummarizationSetBy = Automatic
+
+	column total_time_min
+		dataType: int64
+		formatString: 0
+		lineageTag: 936ff137-7551-4ae5-b1cd-ec962aacc2ac
+		summarizeBy: sum
+		sourceColumn: total_time_min
+
+		annotation SummarizationSetBy = Automatic
+
+	column prep_time_min
+		dataType: int64
+		formatString: 0
+		lineageTag: 1fdd2cac-7087-4ce8-8ac8-baa1e6988dbe
+		summarizeBy: sum
+		sourceColumn: prep_time_min
+
+		annotation SummarizationSetBy = Automatic
+
+	column rest_time_min
+		dataType: string
+		lineageTag: 22feb661-ede3-406a-abce-92e18e37dc24
+		summarizeBy: none
+		sourceColumn: rest_time_min
+
+		annotation SummarizationSetBy = Automatic
+
+	column cook_time_min
+		dataType: int64
+		formatString: 0
+		lineageTag: d90a994b-2322-4ade-b3ba-0c90cd33c246
+		summarizeBy: sum
+		sourceColumn: cook_time_min
+
+		annotation SummarizationSetBy = Automatic
+
+	column Intervalle =
+			
+			VAR d = recipes[total_time_min]
+			RETURN
+			CALCULATE(
+			    MAX(Table_Intervalle[Intervalle]),
+			    FILTER(
+			        Table_Intervalle,
+			        d >= Table_Intervalle[Min_Borne]
+			        && d <= Table_Intervalle[Max_Borne]
+			))
+		lineageTag: 613979a0-f21b-4223-800f-770bdcfc46c4
+		summarizeBy: none
+
+		annotation SummarizationSetBy = Automatic
+
+	partition recipes = m
+		mode: import
+		source =
+				let
+				  Source = Csv.Document(Web.Contents("https://ucergyfr-my.sharepoint.com/personal/orphee-steven-sedjro_hodonou_etu_cyu_fr/Documents/Applications/Microsoft Power Query/Uploaded Files/recipes 2.csv"), [Delimiter = ",", Columns = 24, Encoding = 65001, QuoteStyle = QuoteStyle.None]),
+				  #"En-têtes promus" = Table.PromoteHeaders(Source, [PromoteAllScalars = true]),
+				  #"Type de colonne changé" = Table.TransformColumnTypes(#"En-têtes promus", {{"recipe_id", Int64.Type}, {"url", type text}, {"title", type text}, {"image_url", type text}, {"rating_raw", type text}, {"rating_value", type text}, {"difficulty", type text}, {"cost", type text}, {"servings_raw", Int64.Type}, {"servings_value", Int64.Type}, {"comment_block", Int64.Type}, {"comments_extracted_count", Int64.Type}, {"steps_count", Int64.Type}, {"ingredients_count", Int64.Type}, {"title_len", Int64.Type}, {"total_time_raw", type text}, {"prep_time_raw", type text}, {"rest_time_raw", type text}, {"cook_time_raw", type text}, {"total_time_min", Int64.Type}, {"prep_time_min", Int64.Type}, {"rest_time_min", type text}, {"cook_time_min", Int64.Type}, {"avg_step_len_chars", type text}}, "fr"),
+				    #"Duplication de la colonne" = Table.AddColumn(#"Type de colonne changé", "rating_value - Copier", each [rating_value], type text),
+				    #"Type modifié avec paramètres régionaux1" = Table.TransformColumnTypes(#"Duplication de la colonne", {{"rating_value", type number}}, "en-US"),
+				    #"Colonnes supprimées" = Table.RemoveColumns(#"Type modifié avec paramètres régionaux1",{"rating_value - Copier"}),
+				    #"Lignes vides supprimées" = Table.SelectRows(#"Colonnes supprimées", each not List.IsEmpty(List.RemoveMatchingItems(Record.FieldValues(_), {"", null}))),
+				    #"Colonnes supprimées1" = Table.RemoveColumns(#"Lignes vides supprimées",{"rating_raw", "difficulty", "cost", "servings_raw", "comments_extracted_count", "title_len", "total_time_raw", "prep_time_raw", "rest_time_raw", "cook_time_raw", "avg_step_len_chars"}),
+				    #"Type modifié" = Table.TransformColumnTypes(#"Colonnes supprimées1",{{"title", type text}})
+				in
+				    #"Type modifié"
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

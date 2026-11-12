@@ -1,0 +1,13 @@
+# Power BI : caches et paramètres locaux
+**/.pbi/
+
+# Copies de travail et sauvegardes locales
+/backups/
+
+# Exports binaires contenant potentiellement les données
+*.pbix
+*.pbit
+
+# Fichiers temporaires
+*.tmp
+~$*

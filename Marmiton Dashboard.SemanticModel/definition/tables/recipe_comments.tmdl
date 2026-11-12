@@ -1,0 +1,91 @@
+table recipe_comments
+	lineageTag: ff10dcaa-615f-428e-a972-572f5c6caea0
+
+	column recipe_id
+		dataType: int64
+		formatString: 0
+		lineageTag: c710d093-2198-437b-9597-4175a5d376c5
+		summarizeBy: none
+		sourceColumn: recipe_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column recipe_url
+		dataType: string
+		lineageTag: 8b550c4a-6fe6-40d5-8b70-cdc8838138f8
+		summarizeBy: none
+		sourceColumn: recipe_url
+
+		annotation SummarizationSetBy = Automatic
+
+	column comment_index
+		dataType: int64
+		formatString: 0
+		lineageTag: 44ba8664-d96f-4ae6-95c2-b63553077a2a
+		summarizeBy: sum
+		sourceColumn: comment_index
+
+		annotation SummarizationSetBy = Automatic
+
+	column author_pseudo
+		dataType: string
+		lineageTag: f0819f80-936d-41f6-a295-7f026c565b65
+		summarizeBy: none
+		sourceColumn: author_pseudo
+
+		annotation SummarizationSetBy = Automatic
+
+	column author_note
+		dataType: string
+		lineageTag: 44f77f0b-81fd-49cd-98dc-4d3f9fedda65
+		summarizeBy: none
+		sourceColumn: author_note
+
+		annotation SummarizationSetBy = Automatic
+
+	column comment_text
+		dataType: string
+		lineageTag: 2f6bbea9-5b32-41ad-b55e-9840f18d6511
+		summarizeBy: none
+		sourceColumn: comment_text
+
+		annotation SummarizationSetBy = Automatic
+
+	column comment_date_raw
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: 47aebd12-234b-4fed-9d77-f53bff3cee27
+		summarizeBy: none
+		sourceColumn: comment_date_raw
+
+		variation Variation
+			isDefault
+			relationship: 55b35888-f80e-4507-a6ec-bcef7e642e80
+			defaultHierarchy: LocalDateTable_946dee72-019b-4ad6-99e0-4d223834fddc.'Hiérarchie de dates'
+
+		annotation SummarizationSetBy = Automatic
+
+	column comment_date_is_valid_format
+		dataType: boolean
+		formatString: """TRUE"";""TRUE"";""FALSE"""
+		lineageTag: 9a5a39f7-5b9a-4b28-a581-100cea9f0803
+		summarizeBy: none
+		sourceColumn: comment_date_is_valid_format
+
+		annotation SummarizationSetBy = Automatic
+
+	partition recipe_comments = m
+		mode: import
+		source =
+				let
+				  Source = Csv.Document(Web.Contents("https://ucergyfr-my.sharepoint.com/personal/orphee-steven-sedjro_hodonou_etu_cyu_fr/Documents/Applications/Microsoft Power Query/Uploaded Files/recipe_comments 1.csv"), [Delimiter = ",", Columns = 9, Encoding = 65001, QuoteStyle = QuoteStyle.None]),
+				  #"En-têtes promus" = Table.PromoteHeaders(Source, [PromoteAllScalars = true]),
+				  #"Type de colonne changé" = Table.TransformColumnTypes(#"En-têtes promus", {{"recipe_id", Int64.Type}, {"recipe_url", type text}, {"comment_index", Int64.Type}, {"author_pseudo", type text}, {"author_note", type text}, {"comment_text", type text}, {"comment_len_chars", Int64.Type}, {"comment_date_raw", type datetime}, {"comment_date_is_valid_format", type logical}}, "fr"),
+				    #"Colonnes supprimées" = Table.RemoveColumns(#"Type de colonne changé",{"comment_len_chars"})
+				in
+				  #"Colonnes supprimées"
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

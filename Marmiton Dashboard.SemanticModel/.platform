@@ -1,0 +1,11 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/gitIntegration/platformProperties/2.0.0/schema.json",
+  "metadata": {
+    "type": "SemanticModel",
+    "displayName": "Marmiton Dashboard"
+  },
+  "config": {
+    "version": "2.0",
+    "logicalId": "4afaa2b9-35e7-44d7-98df-0a8bac979a87"
+  }
+}
