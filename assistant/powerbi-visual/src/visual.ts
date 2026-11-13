@@ -3,8 +3,7 @@ import '../style/visual.less';
 import IVisual = powerbi.extensibility.visual.IVisual;
 import VisualConstructorOptions = powerbi.extensibility.visual.VisualConstructorOptions;
 import VisualUpdateOptions = powerbi.extensibility.visual.VisualUpdateOptions;
-// eslint-disable-next-line powerbi-visuals/no-http-string -- Desktop-only loopback backend.
-const base = 'http://127.0.0.1:8787';
+const base = "https://marmiton-assistant.onrender.com";
 function el<K extends keyof HTMLElementTagNameMap>(tag: K, text?: string): HTMLElementTagNameMap[K] {
   const node = document.createElement(tag); if (text) node.textContent = text; return node;
 }
@@ -29,12 +28,12 @@ export class Visual implements IVisual {
     };
     this.state.textContent = 'Jumelage requis'; toolbar.append(this.state, connect, reset);
     const pair = el('div'); pair.className = 'pairing';
-    this.pairing.placeholder = 'Code de jumelage du navigateur local'; this.pairing.type = 'password';
+    this.pairing.placeholder = 'Code de jumelage du site Marmiton'; this.pairing.type = 'password';
     this.pairing.setAttribute('aria-label', 'Code de jumelage'); this.pairing.autocomplete = 'off';
     const pairButton = el('button', 'Connecter le chat');
     pairButton.onclick = async () => {
       this.code = this.pairing.value.trim();
-      if (!/^[a-f0-9]{64}$/.test(this.code)) { this.state.textContent = 'Copiez le code depuis le navigateur local.'; return; }
+      if (!/^[a-f0-9]{64}$/.test(this.code)) { this.state.textContent = 'Copiez le code depuis le site Marmiton.'; return; }
       try {
         const status = await this.json('status');
         this.state.textContent = status.connected ? 'Power BI connecté' : 'Connectez Microsoft dans le navigateur, puis recliquez ici.';
@@ -68,7 +67,7 @@ export class Visual implements IVisual {
     if (data !== undefined) headers['Content-Type'] = 'application/json';
     let response: Response;
     try { response = await fetch(base + '/api/' + route, { method: data === undefined ? 'GET' : 'POST', headers, body: data === undefined ? undefined : JSON.stringify(data), signal }); }
-    catch (e) { if (signal?.aborted) throw e; throw new Error('Serveur local inaccessible depuis le visuel. Vérifiez Node et les autorisations réseau Power BI.'); }
+    catch (e) { if (signal?.aborted) throw e; throw new Error('Serveur Marmiton inaccessible. Réessayez après son réveil ou vérifiez les autorisations réseau Power BI.'); }
     if (!response.ok) { const result = await response.json(); throw new Error(result.error || 'Le serveur ne répond pas.'); }
     return response;
   }
