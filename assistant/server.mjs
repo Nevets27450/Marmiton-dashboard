@@ -40,7 +40,7 @@ const server = http.createServer(async (req, res) => {
   if (req.method === 'GET' && url.pathname === '/healthz') return json(res, 200, { status: 'ok' });
   // A sandboxed Power BI visual has an opaque (null) origin. It must be
   // explicitly paired from the local browser; CORS alone never grants access.
-  const visualRoute = ['/api/status', '/api/chat', '/api/chat/reset'].includes(url.pathname);
+  const visualRoute = ['/api/visual/connect', '/api/status', '/api/chat', '/api/chat/reset'].includes(url.pathname);
   const visualOrigin = req.headers.origin === 'null' && visualRoute;
   if (visualOrigin) {
     res.setHeader('Access-Control-Allow-Origin', 'null');
@@ -55,11 +55,21 @@ const server = http.createServer(async (req, res) => {
   }
   try {
     if (url.pathname.startsWith('/api/')) {
+      if (req.method === 'POST' && url.pathname === '/api/visual/connect' && visualOrigin) {
+        await body(req);
+        const connection = sessions.createConnection();
+        return json(res, 201, { visualToken: connection.token, authorizationUrl: `${origin}/connect#ticket=${connection.ticket}`, expiresIn: 600 });
+      }
       const browserSession = (!req.headers.origin || req.headers.origin === origin) ? sessions.get(req.headers['x-marmiton-session']) : null;
       const visualSession = visualOrigin ? sessions.get(req.headers['x-marmiton-visual'], true) : null;
       const active = browserSession || visualSession;
-      if (!active) return json(res, 403, { error: 'Session expirée ou invalide. Reconnecte le navigateur et recopie le code de jumelage.' });
+      if (!active && visualOrigin && req.method === 'GET' && url.pathname === '/api/status' && sessions.pendingConnection(req.headers['x-marmiton-visual'])) return json(res, 200, { connected: false, awaitingApproval: true });
+      if (!active) return json(res, 403, { error: 'Session expirée ou invalide. Clique sur Se connecter dans le rapport.' });
       const { powerbi, conversations } = active;
+      if (req.method === 'POST' && url.pathname === '/api/visual/approve' && browserSession) {
+        const input = await body(req); sessions.approveConnection(input.ticket, browserSession);
+        return json(res, 200, { approved: true });
+      }
       if (req.method === 'GET' && url.pathname === '/api/visual/pairing' && browserSession) return json(res, 200, { code: active.pairing });
       if (req.method === 'GET' && url.pathname === '/api/status') return json(res, 200, { ...powerbi.status(), provider: config.provider, model: config.provider === 'gemini' ? config.model : config.ollamaModel, llmConfigured: config.provider === 'ollama' || !!config.apiKey });
       if (req.method !== 'POST') return json(res, 405, { error: 'Méthode non autorisée.' });
@@ -100,14 +110,16 @@ const server = http.createServer(async (req, res) => {
       return json(res, 404, { error: 'Route inconnue.' });
     }
     if (req.method !== 'GET') return json(res, 405, { error: 'Méthode non autorisée.' });
-    const files = { '/': ['index.html', 'text/html'], '/embed': ['index.html', 'text/html'], '/app.js': ['app.js', 'text/javascript'], '/style.css': ['style.css', 'text/css'] };
+    const files = { '/': ['index.html', 'text/html'], '/connect': ['connect.html', 'text/html'], '/connect.js': ['connect.js', 'text/javascript'], '/embed': ['index.html', 'text/html'], '/app.js': ['app.js', 'text/javascript'], '/style.css': ['style.css', 'text/css'] };
     if (!files[url.pathname]) return json(res, 404, { error: 'Page inconnue.' });
     const [file, type] = files[url.pathname];
     let contents = await readFile(directory + 'public/' + file, 'utf8');
-    if (file === 'index.html') {
+    if (file === 'index.html' || file === 'connect.html') {
       const cookie = req.headers.cookie?.split(';').map(s => s.trim()).find(s => s.startsWith('marmiton-browser='))?.slice('marmiton-browser='.length);
       const browser = sessions.get(cookie) || sessions.create();
-      res.setHeader('Set-Cookie', `marmiton-browser=${browser.id}; HttpOnly; SameSite=Strict; Path=/; Max-Age=28800${hosted ? '; Secure' : ''}`);
+      // Lax keeps an existing session on the top-level navigation from Power BI.
+      // API mutations still require the private header and matching Origin.
+      res.setHeader('Set-Cookie', `marmiton-browser=${browser.id}; HttpOnly; SameSite=Lax; Path=/; Max-Age=28800${hosted ? '; Secure' : ''}`);
       contents = contents.replace('__SESSION__', browser.id);
       if (url.pathname === '/embed') {
         // Desktop-only integration. No wildcard and no CORS: external sites

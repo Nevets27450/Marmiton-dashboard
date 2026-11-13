@@ -10,15 +10,33 @@ function el<K extends keyof HTMLElementTagNameMap>(tag: K, text?: string): HTMLE
 export class Visual implements IVisual {
   private root = el('div'); private messages = el('div'); private state = el('span');
   private input = el('textarea'); private send = el('button', 'Envoyer ↑');
-  private stop = el('button', 'Arrêter'); private pairing = el('input');
+  private stop = el('button', 'Arrêter'); private connect = el('button', 'Se connecter ↗');
   private code = ''; private conversationId: string | null = null;
+  private pollTimer?: ReturnType<typeof setTimeout>; private ready = false;
+  private authorizationUrl = ''; private connectDeadline = 0;
   private abort?: AbortController; private busy = false; private destroyed = false;
   private events: powerbi.extensibility.IVisualEventService;
   constructor(options?: VisualConstructorOptions) {
     if (!options) throw new Error('Power BI doit initialiser le visuel.');
     this.events = options.host.eventService; this.root.className = 'marmiton-visual';
     const toolbar = el('div'); toolbar.className = 'local-toolbar';
-    const connect = el('button', 'Connexion Microsoft ↗'); connect.onclick = () => options.host.launchUrl(base + '/');
+    this.connect.onclick = async () => {
+      if (this.busy) return;
+      clearTimeout(this.pollTimer);
+      this.connect.disabled = true; this.send.disabled = true; this.ready = false;
+      this.state.textContent = 'Préparation de la connexion…';
+      try {
+        const connection = await this.json('visual/connect', {});
+        if (this.destroyed) return;
+        const url = new URL(connection.authorizationUrl);
+        if (url.origin !== base || url.pathname !== '/connect' || !/^#ticket=[a-f0-9]{64}$/.test(url.hash) || !/^[a-f0-9]{64}$/.test(connection.visualToken)) throw new Error('Réponse de connexion inattendue.');
+        this.code = connection.visualToken; this.authorizationUrl = url.href;
+        this.connectDeadline = Date.now() + connection.expiresIn * 1000; this.conversationId = null;
+        this.state.textContent = 'Validez la connexion dans le navigateur…'; this.connect.textContent = 'Relancer la connexion ↗';
+        options.host.launchUrl(url.href); void this.pollConnection();
+      } catch (e) { this.state.textContent = (e as Error).message; }
+      finally { this.connect.disabled = false; }
+    };
     const reset = el('button', 'Nouvelle conversation');
     reset.onclick = async () => {
       if (this.busy) return;
@@ -26,22 +44,7 @@ export class Visual implements IVisual {
         this.conversationId = null; this.messages.replaceChildren(); this.welcome();
       } catch (e) { this.state.textContent = (e as Error).message; }
     };
-    this.state.textContent = 'Jumelage requis'; toolbar.append(this.state, connect, reset);
-    const pair = el('div'); pair.className = 'pairing';
-    this.pairing.placeholder = 'Code de jumelage du site Marmiton'; this.pairing.type = 'password';
-    this.pairing.setAttribute('aria-label', 'Code de jumelage'); this.pairing.autocomplete = 'off';
-    const pairButton = el('button', 'Connecter le chat');
-    pairButton.onclick = async () => {
-      this.code = this.pairing.value.trim();
-      if (!/^[a-f0-9]{64}$/.test(this.code)) { this.state.textContent = 'Copiez le code depuis le site Marmiton.'; return; }
-      try {
-        const status = await this.json('status');
-        this.state.textContent = status.connected ? 'Power BI connecté' : 'Connectez Microsoft dans le navigateur, puis recliquez ici.';
-        this.send.disabled = !status.connected || !status.llmConfigured;
-        if (status.connected) { pair.hidden = true; this.pairing.value = ''; }
-      } catch (e) { this.state.textContent = (e as Error).message; this.send.disabled = true; }
-    };
-    pair.append(this.pairing, pairButton);
+    this.state.textContent = 'Connectez votre compte pour commencer.'; toolbar.append(this.state, this.connect, reset);
     this.messages.className = 'messages'; this.messages.setAttribute('role', 'log'); this.welcome();
     const form = el('div'); form.className = 'composer';
     this.input.placeholder = 'Posez votre question sur les recettes…'; this.input.maxLength = 2000; this.input.rows = 2;
@@ -52,7 +55,21 @@ export class Visual implements IVisual {
     this.stop.type = 'button'; this.stop.hidden = true; this.stop.onclick = () => this.abort?.abort();
     const actions = el('div'); actions.className = 'actions'; actions.append(this.stop, this.send);
     form.append(this.input, actions);
-    this.root.append(toolbar, pair, this.messages, form); options.element.append(this.root);
+    this.root.append(toolbar, this.messages, form); options.element.append(this.root);
+  }
+  private async pollConnection(): Promise<void> {
+    clearTimeout(this.pollTimer);
+    if (this.destroyed || !this.code) return;
+    try {
+      const status = await this.json('status'); if (this.destroyed) return;
+      this.ready = !!status.connected && !!status.llmConfigured; this.send.disabled = !this.ready || this.busy;
+      if (status.connected) {
+        this.authorizationUrl = ''; this.connectDeadline = 0; this.connect.textContent = 'Se reconnecter ↗';
+        if (!this.busy) this.state.textContent = status.llmConfigured ? 'Power BI connecté' : 'Le service IA n’est pas configuré.';
+      } else if (!this.busy) this.state.textContent = status.awaitingApproval ? 'Autorisez la connexion dans le navigateur…' : status.pending ? 'Validation Microsoft en attente…' : status.message || 'Connectez Microsoft dans le navigateur.';
+      if (!status.connected && this.connectDeadline && Date.now() > this.connectDeadline) { this.code = ''; throw new Error('Connexion expirée. Cliquez sur Se connecter pour réessayer.'); }
+    } catch (e) { this.ready = false; this.send.disabled = true; if (!this.destroyed) this.state.textContent = (e as Error).message; }
+    if (!this.destroyed && this.code) this.pollTimer = setTimeout(() => { void this.pollConnection(); }, this.ready ? 30000 : 3000);
   }
   private welcome(): void {
     const welcome = el('div'); welcome.className = 'welcome';
@@ -68,7 +85,10 @@ export class Visual implements IVisual {
     let response: Response;
     try { response = await fetch(base + '/api/' + route, { method: data === undefined ? 'GET' : 'POST', headers, body: data === undefined ? undefined : JSON.stringify(data), signal }); }
     catch (e) { if (signal?.aborted) throw e; throw new Error('Serveur Marmiton inaccessible. Réessayez après son réveil ou vérifiez les autorisations réseau Power BI.'); }
-    if (!response.ok) { const result = await response.json(); throw new Error(result.error || 'Le serveur ne répond pas.'); }
+    if (!response.ok) {
+      if ([401, 403].includes(response.status)) { this.code = ''; this.ready = false; this.authorizationUrl = ''; this.connect.textContent = 'Se connecter ↗'; }
+      const result = await response.json(); throw new Error(result.error || 'Le serveur ne répond pas.');
+    }
     return response;
   }
   private async json(route: string, data?: unknown): Promise<any> { return (await this.request(route, data)).json(); }
@@ -118,11 +138,11 @@ export class Visual implements IVisual {
       this.state.textContent = this.abort.signal.aborted ? 'Réponse arrêtée' : (e as Error).message;
       if (!text) prose.textContent = this.state.textContent;
     } finally {
-      this.busy = false; this.stop.hidden = true; if (!this.destroyed) this.send.disabled = false;
+      this.busy = false; this.stop.hidden = true; if (!this.destroyed) this.send.disabled = !this.ready;
     }
   }
   public update(options: VisualUpdateOptions): void {
     this.events.renderingStarted(options); this.root.style.width = `${options.viewport.width}px`; this.root.style.height = `${options.viewport.height}px`; this.events.renderingFinished(options);
   }
-  public destroy(): void { this.destroyed = true; this.abort?.abort(); this.code = ''; this.root.remove(); }
+  public destroy(): void { this.destroyed = true; clearTimeout(this.pollTimer); this.abort?.abort(); this.code = ''; this.authorizationUrl = ''; this.root.remove(); }
 }

@@ -30,7 +30,7 @@ Une modification de `.env` nécessite un redémarrage. Le jeton Microsoft est ga
 - La reconnaissance des ingrédients est exacte sur le nom normalisé. Les synonymes et fautes peuvent donner zéro résultat.
 - Les commentaires textuels, filtres interactifs du rapport et RAG ne sont pas encore intégrés. La mémoire courte de la conversation n'est pas une récupération exhaustive d'anciens échanges.
 - Le modèle publié peut différer des fichiers PBIP non republiés : la réponse reflète Power BI Service au moment du calcul.
-- Chaque navigateur possède sa connexion Power BI, son historique et son code de jumelage séparés. Les sessions restent en mémoire pour une seule instance et expirent après huit heures. Le mode local écoute uniquement sur 127.0.0.1 ; le mode hébergé exige une origine HTTPS configurée et vérifie l'accès au modèle avant d'autoriser le chat.
+- Chaque navigateur possède sa connexion Power BI et son historique séparés. Le bouton Se connecter du visuel ouvre une autorisation à usage unique ; après confirmation, le chat détecte sa session automatiquement, sans copie de code de jumelage. Les sessions restent en mémoire pour une seule instance et expirent après huit heures. Le mode local écoute uniquement sur 127.0.0.1 ; le mode hébergé exige une origine HTTPS configurée et vérifie l'accès au modèle avant d'autoriser le chat.
 - La page Assistant IA contient le visuel natif du chat, sans iframe imbriquée. Le paquet est compilé dans `powerbi-visual/dist/`. Le clic Envoyer a été corrigé pour ne pas dépendre des formulaires bloqués par le bac à sable. La version hébergée reste à déployer et à tester avec l'URL HTTPS réelle ; un compte personnel Microsoft n'obtient pas automatiquement les droits Power BI.
 
 ## Passer ensuite à Ollama

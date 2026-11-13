@@ -1,11 +1,5 @@
 const session = document.querySelector('meta[name="marmiton-session"]').content;
 const $ = id => document.getElementById(id);
-$('show-pairing').addEventListener('click', async () => {
-  try {
-    const result = await api('visual/pairing');
-    const input = $('visual-pairing'); input.value = result.code; input.hidden = false; input.select();
-  } catch (error) { $('show-pairing').textContent = error.message; }
-});
 let busy = false;
 let connected = false;
 let ready = false;

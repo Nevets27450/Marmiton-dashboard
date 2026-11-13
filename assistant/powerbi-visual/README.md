@@ -1,17 +1,16 @@
 # Assistant Marmiton dans Power BI Desktop — serveur HTTPS
 
-Le visuel 1.0.3 pointe vers https://marmiton-assistant.onrender.com. Aucun serveur Node local n'est nécessaire pour cette version. Le serveur utilise le modèle publié dans Power BI Service. Les filtres du rapport ne sont pas transmis au chat. L'affichage et le parcours complet dans Desktop restent à vérifier après rechargement.
+Le visuel 1.0.4 pointe vers https://marmiton-assistant.onrender.com et se connecte sans copie de code de jumelage. Aucun serveur Node local n'est nécessaire. Le serveur utilise le modèle publié dans Power BI Service. Les filtres du rapport ne sont pas transmis au chat. Le parcours complet dans Desktop reste à vérifier après rechargement.
 
-1. Ouvrir https://marmiton-assistant.onrender.com et connecter Power BI.
-2. Afficher le code sous « Connecter le visuel Power BI Desktop ».
-3. Dans Power BI Desktop, volet Visualisations → … → Importer un visuel à partir d'un fichier. Choisir `dist/marmitonAssistant7E52235DDC224199B7B645E2E662ED14.1.0.3.0.pbiviz`. Si les ressources du PBIP sont déjà mises à jour, fermer le rapport sans enregistrer puis le rouvrir suffit.
-4. Sur la page Assistant IA, ajouter le visuel importé et l'agrandir. Il ne demande aucun champ de données.
-5. Enregistrer le projet PBIP afin que Desktop enregistre aussi les ressources du visuel.
+1. Charger le visuel `dist/marmitonAssistant7E52235DDC224199B7B645E2E662ED14.1.0.4.0.pbiviz` dans Desktop. Si les ressources du PBIP sont déjà mises à jour, fermer le rapport sans enregistrer puis le rouvrir suffit.
+2. Sur la page Assistant IA, cliquer sur **Se connecter**.
+3. Dans le navigateur, confirmer **Autoriser et connecter**. Valider Microsoft si demandé. Une session Microsoft déjà validée côté serveur est réutilisée.
+4. Revenir dans le rapport : le chat s'active automatiquement après détection de la connexion.
 
-L'import et l'affichage ne sont pas encore vérifiés dans Desktop. Les politiques de visuels personnalisés, le bac à sable et les restrictions d'accès au serveur local peuvent bloquer le chargement ; une compilation réussie ne garantit pas son fonctionnement dans l'hôte. Ne pas publier ce prototype comme assistant destiné aux lecteurs Power BI Service.
+Les politiques de visuels personnalisés et les restrictions réseau de l'hôte peuvent bloquer le chargement ; une compilation réussie ne garantit pas son fonctionnement dans Desktop ou Service. Tester le parcours dans chaque hôte ciblé.
 
-Le visuel 1.0.1 utilise directement le DOM et des appels API, sans iframe imbriquée. Dans le navigateur local, ouvrir « Connecter le visuel Power BI Desktop », afficher le code de jumelage, puis le coller dans le visuel. Ce code aléatoire reste en mémoire, change au redémarrage du serveur et n'est jamais inclus dans le paquet ni enregistré dans le rapport. Le serveur autorise seulement status/chat/reset depuis l'origine opaque du visuel avec ce code ; les opérations de connexion Microsoft restent réservées au navigateur local.
+Le visuel utilise directement le DOM et des appels API, sans iframe imbriquée. Son jeton privé reste en mémoire et n'est pas inclus dans le lien du navigateur. Ce lien contient un ticket à usage unique, expirant après dix minutes, qui doit être confirmé dans le navigateur. Les connexions et historiques sont séparés par utilisateur. Une déconnexion révoque tous les visuels associés à la session.
 
-Le bouton Connexion Microsoft ouvre le site hébergé ; revenir au rapport après la connexion et copier le code dans le champ de jumelage. Les jetons Microsoft et la clé Gemini restent dans le serveur et ne sont pas inclus dans le paquet. Une veille ou un redémarrage du service gratuit peut imposer une reconnexion.
+Les jetons Microsoft et la clé Gemini restent dans le serveur et ne sont pas inclus dans le paquet. Une veille ou un redémarrage du service gratuit peut imposer une reconnexion. Une recréation du visuel perd aussi son jeton en mémoire : recliquer sur Se connecter. Le code éventuellement demandé par Microsoft reste une validation Microsoft, pas un code de jumelage à saisir dans le rapport.
 
 Pour recompiler : `npm.cmd ci`, puis `npm.cmd run package -- --resources --skip-api`.

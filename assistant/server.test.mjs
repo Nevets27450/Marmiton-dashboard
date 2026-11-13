@@ -36,6 +36,22 @@ test('Desktop pairing requires a secret, limits opaque-origin CORS and preserves
     assert.equal(response.status, 401); // Valid pairing still requires Microsoft login.
     response = await fetch(base + '/api/auth/logout', { method: 'POST', headers: { Origin: 'null', 'Content-Type': 'application/json', 'x-marmiton-visual': code }, body: '{}' });
     assert.equal(response.status, 403);
+    response = await fetch(base + '/api/visual/connect', { method: 'POST', headers: { Origin: 'null', 'Content-Type': 'application/json' }, body: '{}' });
+    assert.equal(response.status, 201); const connection = await response.json();
+    assert.equal(response.headers.get('access-control-allow-origin'), 'null');
+    const authorization = new URL(connection.authorizationUrl); assert.equal(authorization.pathname, '/connect'); assert.equal(authorization.search, '');
+    assert.equal(connection.authorizationUrl.includes(connection.visualToken), false);
+    const ticket = new URLSearchParams(authorization.hash.slice(1)).get('ticket');
+    response = await fetch(base + '/api/status', { headers: { Origin: 'null', 'x-marmiton-visual': connection.visualToken } });
+    assert.equal((await response.json()).awaitingApproval, true);
+    response = await fetch(base + '/api/chat', { method: 'POST', headers: { Origin: 'null', 'Content-Type': 'application/json', 'x-marmiton-visual': connection.visualToken }, body: '{}' }); assert.equal(response.status, 403);
+    response = await fetch(base + '/api/visual/approve', { method: 'POST', headers: { Origin: 'null', 'Content-Type': 'application/json', 'x-marmiton-visual': connection.visualToken }, body: JSON.stringify({ ticket }) }); assert.equal(response.status, 403);
+    response = await fetch(base + '/api/visual/approve', { method: 'POST', headers: { Origin: base, 'Content-Type': 'application/json', 'x-marmiton-session': session }, body: JSON.stringify({ ticket }) }); assert.equal(response.status, 200);
+    response = await fetch(base + '/api/status', { headers: { Origin: 'null', 'x-marmiton-visual': connection.visualToken } });
+    assert.equal(response.status, 200); const linkedStatus = await response.json(); assert.equal(linkedStatus.awaitingApproval, undefined); assert.equal(linkedStatus.connected, false);
+    response = await fetch(base + '/api/visual/approve', { method: 'POST', headers: { Origin: base, 'Content-Type': 'application/json', 'x-marmiton-session': session }, body: JSON.stringify({ ticket }) }); assert.equal(response.status, 400);
+    response = await fetch(base + '/api/auth/logout', { method: 'POST', headers: { Origin: base, 'Content-Type': 'application/json', 'x-marmiton-session': session }, body: '{}' }); assert.equal(response.status, 200);
+    response = await fetch(base + '/api/status', { headers: { Origin: 'null', 'x-marmiton-visual': connection.visualToken } }); assert.equal(response.status, 403);
   } finally {
     if (child.exitCode === null) { const ended = once(child, 'exit'); child.kill(); await ended; }
   }
@@ -59,7 +75,7 @@ test('hosted mode uses HTTPS browser cookies and never shares browser sessions',
       }); request.on('error', reject); request.end();
     });
     const first = await proxyFetch(base, { headers: host }); assert.equal(first.status, 200);
-    const cookie = first.headers.get('set-cookie'); assert.match(cookie, /HttpOnly/); assert.match(cookie, /Secure/); assert.match(cookie, /SameSite=Strict/);
+    const cookie = first.headers.get('set-cookie'); assert.match(cookie, /HttpOnly/); assert.match(cookie, /Secure/); assert.match(cookie, /SameSite=Lax/);
     const token = html => html.match(/name="marmiton-session" content="([a-f0-9]+)"/)[1];
     const a = token(await first.text());
     const b = token(await (await proxyFetch(base, { headers: host })).text()); assert.notEqual(a, b);
