@@ -25,6 +25,7 @@ test('Send clicks call chat directly without relying on sandbox-blocked form sub
       if (url.endsWith('/visual/connect')) return Response.json({ visualToken, authorizationUrl: 'https://marmiton-assistant.onrender.com/connect#ticket=' + ticket, expiresIn: 600 }, { status: 201 });
       if (url.endsWith('/status')) return Response.json(++polls === 1 ? { connected: false, awaitingApproval: true } : { connected: true, llmConfigured: true });
       if (url.endsWith('/chat/history')) return Response.json({ conversationId, messages: [{ question: 'merci', answer: 'Avec plaisir !', rows: [], scope: 'Aucun calcul effectué' }] });
+      if (url.endsWith('/visual/logout')) return Response.json({ connected: false });
       return new Response('data: '+JSON.stringify({ type: 'conversation', id: conversationId })+'\n\ndata: {"type":"delta","text":"Avec plaisir !"}\n\ndata: {"type":"done"}\n\n');
     }
   };
@@ -69,5 +70,9 @@ test('Send clicks call chat directly without relying on sandbox-blocked form sub
   assert.ok(walk(restoredContainer).some(n => n.textContent === 'Avec plaisir !'), 'Messages are rehydrated after changing pages');
   assert.equal(calls.filter(c => c.url.endsWith('/chat')).length, 1, 'Restoration does not rerun Gemini or Power BI calculations');
   assert.equal([...storageData.values()][0].includes('Avec plaisir'), false, 'Chat text is not stored in the Power BI cache');
+  const logout = walk(restoredContainer).find(n => n.textContent === 'Se déconnecter'); assert.ok(logout);
+  await logout.onclick();
+  assert.ok(calls.some(c => c.url.endsWith('/visual/logout'))); assert.equal(storageData.size, 0);
+  assert.equal(restoredSend.disabled, true); assert.equal(logout.textContent, 'Se connecter ↗');
   restored.destroy();
 });

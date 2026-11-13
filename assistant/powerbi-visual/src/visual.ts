@@ -17,6 +17,7 @@ export class Visual implements IVisual {
   private authorizationUrl = ''; private connectDeadline = 0;
   private cache: SessionCache; private expiresAt = 0; private lifecycle = 0;
   private displayedConversation: string | null = null;
+  private connected = false;
   private abort?: AbortController; private busy = false; private destroyed = false;
   private events: powerbi.extensibility.IVisualEventService;
   constructor(options?: VisualConstructorOptions) {
@@ -26,6 +27,17 @@ export class Visual implements IVisual {
     const toolbar = el('div'); toolbar.className = 'local-toolbar';
     this.connect.onclick = async () => {
       if (this.busy) return;
+      if (this.connected) {
+        this.connect.disabled = true; this.send.disabled = true;
+        try {
+          await this.json('visual/logout', {}); this.lifecycle++; clearTimeout(this.pollTimer);
+          this.connected = false; this.ready = false; this.code = ''; this.authorizationUrl = ''; this.conversationId = null; this.displayedConversation = null;
+          await this.cache.clear(); this.messages.replaceChildren(); this.welcome();
+          this.connect.textContent = 'Se connecter ↗'; this.state.textContent = 'Vous êtes déconnecté.';
+        } catch (e) { this.state.textContent = (e as Error).message; }
+        finally { this.connect.disabled = false; this.send.disabled = !this.ready; }
+        return;
+      }
       this.lifecycle++;
       clearTimeout(this.pollTimer);
       this.connect.disabled = true; this.send.disabled = true; this.ready = false;
@@ -78,6 +90,8 @@ export class Visual implements IVisual {
     if (this.destroyed || !this.code) return;
     try {
       const status = await this.json('status'); if (this.destroyed) return;
+      this.connected = !!status.connected;
+      if (!status.connected && !status.pending && !status.awaitingApproval) this.connect.textContent = 'Se connecter ↗';
       this.ready = !!status.connected && !!status.llmConfigured;
       this.send.disabled = true;
       if (status.connected && this.conversationId && this.displayedConversation !== this.conversationId && !this.busy) await this.restoreHistory();
@@ -85,7 +99,7 @@ export class Visual implements IVisual {
       this.send.disabled = !this.ready || this.busy;
       if (status.connected) {
         this.expiresAt = status.expiresAt || this.expiresAt || Date.now() + 60 * 60 * 1000;
-        this.authorizationUrl = ''; this.connectDeadline = 0; this.connect.textContent = 'Se reconnecter ↗';
+        this.authorizationUrl = ''; this.connectDeadline = 0; this.connect.textContent = 'Se déconnecter';
         void this.saveSession();
         if (!this.busy) this.state.textContent = status.llmConfigured ? 'Power BI connecté' : 'Le service IA n’est pas configuré.';
       } else if (!this.busy) this.state.textContent = status.awaitingApproval ? 'Autorisez la connexion dans le navigateur…' : status.pending ? 'Validation Microsoft en attente…' : status.message || 'Connectez Microsoft dans le navigateur.';
@@ -131,6 +145,7 @@ export class Visual implements IVisual {
     const header = el('tr'); for (const key of keys) header.append(el('th', key.replace(/^\[|\]$/g, ''))); table.append(header);
     for (const row of rows) { const tr = el('tr'); for (const key of keys) tr.append(el('td', row[key] == null ? '—' : String(row[key]))); table.append(tr); }
     details.append(table); answer.append(details);
+    if (data.query) { const dax = el('pre', data.query); details.append(dax); }
   }
   private async request(route: string, data?: unknown, signal?: AbortSignal): Promise<Response> {
     const headers: Record<string, string> = { 'x-marmiton-visual': this.code };
@@ -139,7 +154,7 @@ export class Visual implements IVisual {
     try { response = await fetch(base + '/api/' + route, { method: data === undefined ? 'GET' : 'POST', headers, body: data === undefined ? undefined : JSON.stringify(data), signal }); }
     catch (e) { if (signal?.aborted) throw e; throw new Error('Serveur Marmiton inaccessible. Réessayez après son réveil ou vérifiez les autorisations réseau Power BI.'); }
     if (!response.ok) {
-      if ([401, 403].includes(response.status)) { this.code = ''; this.ready = false; this.authorizationUrl = ''; void this.cache.clear(); this.connect.textContent = 'Se connecter ↗'; }
+      if ([401, 403].includes(response.status)) { this.code = ''; this.ready = false; this.connected = false; this.authorizationUrl = ''; void this.cache.clear(); this.connect.textContent = 'Se connecter ↗'; }
       const result = await response.json(); throw new Error(result.error || 'Le serveur ne répond pas.');
     }
     return response;

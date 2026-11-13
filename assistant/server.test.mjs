@@ -50,7 +50,7 @@ test('Desktop pairing requires a secret, limits opaque-origin CORS and preserves
     response = await fetch(base + '/api/status', { headers: { Origin: 'null', 'x-marmiton-visual': connection.visualToken } });
     assert.equal(response.status, 200); const linkedStatus = await response.json(); assert.equal(linkedStatus.awaitingApproval, undefined); assert.equal(linkedStatus.connected, false);
     response = await fetch(base + '/api/visual/approve', { method: 'POST', headers: { Origin: base, 'Content-Type': 'application/json', 'x-marmiton-session': session }, body: JSON.stringify({ ticket }) }); assert.equal(response.status, 400);
-    response = await fetch(base + '/api/auth/logout', { method: 'POST', headers: { Origin: base, 'Content-Type': 'application/json', 'x-marmiton-session': session }, body: '{}' }); assert.equal(response.status, 200);
+    response = await fetch(base + '/api/visual/logout', { method: 'POST', headers: { Origin: 'null', 'Content-Type': 'application/json', 'x-marmiton-visual': connection.visualToken }, body: '{}' }); assert.equal(response.status, 200);
     response = await fetch(base + '/api/status', { headers: { Origin: 'null', 'x-marmiton-visual': connection.visualToken } }); assert.equal(response.status, 403);
   } finally {
     if (child.exitCode === null) { const ended = once(child, 'exit'); child.kill(); await ended; }

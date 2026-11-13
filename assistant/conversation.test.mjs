@@ -87,6 +87,16 @@ test('display history includes social replies and survives analytical context tr
   const other = new ConversationStore(); assert.throws(() => other.history(conversation.id), /expirée/);
   store.remove(conversation.id); assert.throws(() => store.history(conversation.id), /expirée/);
 });
+
+test('requests for the query return the exact executed DAX without another LLM call or calculation', async () => {
+  const store = new ConversationStore(), conversation = store.get(); let executed;
+  await collect(runConversation({ question: 'Combien de recettes sans note ?', conversation, planner: async () => plan({ note: 'unrated' }), powerbi: { execute: async query => { executed = query; return [{ '[Recettes]': 12, '[TotalModele]': 20, '[Part]': 0.6 }]; } }, responder: async function* () { yield '12 recettes.'; } }));
+  const events = await collect(runConversation({ question: 'Donne-moi la requête utilisée pour cette réponse', conversation, planner: async () => assert.fail('No LLM required'), powerbi: { execute: async () => assert.fail('No query should be rerun') } }));
+  assert.ok(events.at(-1).answer.includes(executed)); assert.match(events.at(-1).answer, /sans note/);
+  assert.equal(conversation.turns.length, 1); assert.equal(store.history(conversation.id)[0].query, executed);
+  const empty = await collect(runConversation({ question: 'Montre la requête DAX', conversation: store.get() }));
+  assert.match(empty.at(-1).answer, /Aucune requête exécutée/);
+});
 test('SSE reader preserves split accents and ignores heartbeat frames', async () => {
   const text = ': keepalive\r\n\r\ndata: {"text":"réponse"}\r\n\r\ndata: [DONE]\r\n\r\n';
   const encoded = new TextEncoder().encode(text);

@@ -2,7 +2,7 @@
 export const planSchema = {
   type: 'object',
   properties: {
-    operation: { type: 'string', enum: ['count', 'duration_distribution', 'ingredient_presence', 'top_ingredients', 'top_recipes', 'conversation', 'unsupported'] },
+    operation: { type: 'string', enum: ['count', 'duration_distribution', 'ingredient_presence', 'top_ingredients', 'top_recipes', 'conversation', 'query_explanation', 'unsupported'] },
     note: { type: 'string', enum: ['all', 'rated', 'unrated', 'exact'] },
     rating: { type: ['number', 'null'] },
     minMinutes: { type: ['number', 'null'] },
@@ -24,6 +24,7 @@ Un pourcentage a pour dénominateur toutes les recettes du modèle, même avec d
 Les avis textuels, le coût, la difficulté et les questions hors de ces opérations ne sont pas pris en charge. Utilise unsupported et explique la limite dans clarification.
 Aucun filtre du rapport n'est transmis dans ce prototype. Utilise l'historique fourni pour résoudre les relances : 'et sans note ?' conserve la durée et l'ingrédient précédents et remplace le filtre note. 'Et avec du beurre ?' conserve les autres critères et remplace l'ingrédient. Une nouvelle question explicitement indépendante réinitialise les anciens critères. Si 'cette sélection' ou 'cette recette' ne peut pas être identifiée dans l'historique, demande les critères via unsupported.
 Pour une salutation, un remerciement, un acquiescement ou un échange social sans demande de données, utilise conversation et écris une réponse naturelle, courte et adaptée dans clarification. Ne demande pas de reformuler un simple « ok » ou « merci ». Ne reprends pas les critères de calcul pour ces échanges. Si le message contient aussi une question analytique (ex. « merci, et sans note ? »), traite la question analytique.
+Si l'utilisateur demande la requête, le DAX ou le code de calcul utilisé pour une réponse précédente, utilise query_explanation. N'invente et ne rédige jamais la requête : le serveur restitue celle réellement exécutée.
 Renseigne clarification uniquement pour conversation ou unsupported. Dans toutes les réponses destinées à l'utilisateur, ne cite jamais les identifiants techniques des opérations, ni JSON, DAX ou les champs internes ; parle de recettes, notes, durées et ingrédients en français courant. Ne devine pas de critères manquants.`;
 
 export function clarificationAnswer(plan) {
@@ -57,7 +58,7 @@ export function validatePlan(plan) {
 const daxString = value => '"' + value.replaceAll('"', '""') + '"';
 export function buildQuery(input) {
   const p = validatePlan(input);
-  if (['unsupported', 'conversation'].includes(p.operation)) return null;
+  if (['unsupported', 'conversation', 'query_explanation'].includes(p.operation)) return null;
   const filters = [];
   if (p.note === 'rated') filters.push('KEEPFILTERS(NOT ISBLANK(recipes[rating_value]))');
   if (p.note === 'unrated') filters.push('KEEPFILTERS(ISBLANK(recipes[rating_value]))');

@@ -26,10 +26,16 @@ export async function* runConversation({ question, conversation, planner, respon
   check();
   yield { type: 'conversation', id: conversation.id };
   yield { type: 'status', text: history.length ? 'Lecture de votre question et du contexte…' : 'Lecture de votre question…' };
-  const plan = await planner(question, history, signal); check();
+  const normalized = question.normalize('NFD').replace(/\p{M}/gu, '').toLowerCase();
+  const queryRequest = /\b(?:requete|dax|query)\b/.test(normalized) && /\b(?:donne|donner|montre|montrer|partage|partager|affiche|afficher|quelle|quel|utilise|utilisee|executee|executer|permis|voir|obtenir)\b/.test(normalized);
+  const plan = queryRequest ? { operation: 'query_explanation', note: 'all', rating: null, minMinutes: null, maxMinutes: null, ingredient: null, limit: 5, clarification: '' } : await planner(question, history, signal); check();
   const query = buildQuery(plan);
   let rows = []; let answer; let scope = 'Aucun calcul effectué'; let warning;
-  if (!query) {
+  if (plan.operation === 'query_explanation') {
+    const source = [...conversation.messages].reverse().find(message => message.query);
+    answer = source ? `Voici la requête DAX réellement exécutée pour répondre à « ${source.question} » :\n\n${source.query}` : 'Aucune requête exécutée n’est disponible dans cette discussion. Pose d’abord une question sur les données ; je pourrai ensuite partager le DAX utilisé.';
+    yield { type: 'delta', text: answer };
+  } else if (!query) {
     answer = clarificationAnswer(plan);
     yield { type: 'delta', text: answer };
   } else {
@@ -52,9 +58,9 @@ export async function* runConversation({ question, conversation, planner, respon
   }
   check();
   // Social exchanges must not displace the analytical context of follow-ups.
-  if (plan.operation !== 'conversation') history.push({ question, plan, rows, answer: answer.slice(0, 4000) });
+  if (!['conversation', 'query_explanation'].includes(plan.operation)) history.push({ question, plan, rows, answer: answer.slice(0, 4000) });
   if (history.length > 6) history.splice(0, history.length - 6);
-  conversation.messages.push({ question, answer, scope, rows, warning });
+  conversation.messages.push({ question, answer, scope, rows, warning, query });
   if (conversation.messages.length > 50) conversation.messages.splice(0, conversation.messages.length - 50);
   yield { type: 'done', conversationId: conversation.id, answer, scope, warning };
 }

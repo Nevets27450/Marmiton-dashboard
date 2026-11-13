@@ -1,11 +1,12 @@
 # Assistant Marmiton dans Power BI Desktop — serveur HTTPS
 
-Le visuel 1.0.6 pointe vers https://marmiton-assistant.onrender.com et se connecte sans copie de code de jumelage. Aucun serveur Node local n'est nécessaire. Le serveur utilise le modèle publié dans Power BI Service. Les filtres du rapport ne sont pas transmis au chat. Le parcours complet dans Desktop reste à vérifier après rechargement.
+Le visuel 1.0.7 pointe vers https://marmiton-assistant.onrender.com et se connecte sans copie de code de jumelage. Aucun serveur Node local n'est nécessaire. Le serveur utilise le modèle publié dans Power BI Service. Les filtres du rapport ne sont pas transmis au chat. Le parcours complet dans Desktop reste à vérifier après rechargement.
 
-1. Charger le visuel `dist/marmitonAssistant7E52235DDC224199B7B645E2E662ED14.1.0.6.0.pbiviz` dans Desktop. Si les ressources du PBIP sont déjà mises à jour, fermer le rapport sans enregistrer puis le rouvrir suffit.
+1. Charger le visuel `dist/marmitonAssistant7E52235DDC224199B7B645E2E662ED14.1.0.7.0.pbiviz` dans Desktop. Si les ressources du PBIP sont déjà mises à jour, fermer le rapport sans enregistrer puis le rouvrir suffit.
 2. Sur la page Assistant IA, cliquer sur **Se connecter**.
 3. Dans le navigateur, confirmer **Autoriser et connecter**. Valider Microsoft si demandé. Une session Microsoft déjà validée côté serveur est réutilisée.
 4. Revenir dans le rapport : le chat s'active automatiquement après détection de la connexion.
+5. Une fois connecté, le bouton affiche Se déconnecter. Il ferme la session et retire son cache privé. Demander « Donne-moi la requête utilisée » restitue la requête DAX exécutée pour la dernière réponse chiffrée de cette discussion.
 
 Les politiques de visuels personnalisés et les restrictions réseau de l'hôte peuvent bloquer le chargement ; une compilation réussie ne garantit pas son fonctionnement dans Desktop ou Service. Tester le parcours dans chaque hôte ciblé.
 

@@ -40,7 +40,7 @@ const server = http.createServer(async (req, res) => {
   if (req.method === 'GET' && url.pathname === '/healthz') return json(res, 200, { status: 'ok', release: process.env.RENDER_GIT_COMMIT?.slice(0, 7) || 'local' });
   // A sandboxed Power BI visual has an opaque (null) origin. It must be
   // explicitly paired from the local browser; CORS alone never grants access.
-  const visualRoute = ['/api/visual/connect', '/api/status', '/api/chat', '/api/chat/reset', '/api/chat/history'].includes(url.pathname);
+  const visualRoute = ['/api/visual/connect', '/api/visual/logout', '/api/status', '/api/chat', '/api/chat/reset', '/api/chat/history'].includes(url.pathname);
   const visualOrigin = req.headers.origin === 'null' && visualRoute;
   if (visualOrigin) {
     res.setHeader('Access-Control-Allow-Origin', 'null');
@@ -78,7 +78,7 @@ const server = http.createServer(async (req, res) => {
         if (!powerbi.status().pending && Date.now() - active.lastAuth < 30000) return json(res, 429, { error: 'Patiente quelques secondes avant de relancer la connexion.' });
         active.lastAuth = Date.now(); return json(res, 200, await powerbi.startLogin());
       }
-      if (url.pathname === '/api/auth/logout') { powerbi.logout(); conversations.clear(); sessions.rotatePairing(active); return json(res, 200, { connected: false }); }
+      if (url.pathname === '/api/auth/logout' || url.pathname === '/api/visual/logout') { powerbi.logout(); conversations.clear(); sessions.rotatePairing(active); return json(res, 200, { connected: false }); }
       if (url.pathname === '/api/chat/reset') { if (active.chatBusy) return json(res, 409, { error: 'Arrête la réponse en cours avant de recommencer.' }); conversations.remove(input.conversationId); return json(res, 200, { reset: true }); }
       if (url.pathname === '/api/chat/history') {
         if (!powerbi.status().connected) return json(res, 401, { error: 'Reconnecte Power BI pour retrouver ta discussion.' });

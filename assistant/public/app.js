@@ -22,6 +22,7 @@ async function status() {
     $('connect').disabled = state.pending;
     $('connect').hidden = connected;
     $('disconnect').hidden = !connected && !state.pending;
+    $('disconnect').textContent = 'Se déconnecter';
     $('send').disabled = !connected || !ready || busy;
     $('new-chat').disabled = busy;
     $('disconnect').disabled = busy;
@@ -42,6 +43,7 @@ $('connect').addEventListener('click', async () => {
   } catch (e) { $('connection').textContent = e.message; $('connect').disabled = false; }
 });
 $('disconnect').addEventListener('click', async () => { try { await api('auth/logout', {}); conversationId = null; $('messages').replaceChildren(); await status(); } catch (e) { $('connection').textContent = e.message; } });
+window.addEventListener('focus', status);
 for (const example of document.querySelectorAll('.example')) example.addEventListener('click', () => { $('question').value = example.textContent; $('question').focus(); });
 function message(kind, text) {
   document.querySelector('.welcome')?.remove();

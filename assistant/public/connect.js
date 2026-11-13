@@ -10,6 +10,7 @@ async function api(route, data) {
 }
 function connected() {
   clearInterval(timer); $('microsoft').hidden = true; $('approve').hidden = true;
+  $('disconnect').hidden = false;
   $('link-status').textContent = 'Votre rapport est connecté à Power BI.';
   $('link-help').textContent = 'Vous pouvez fermer cet onglet et revenir au rapport. Le chat s’active automatiquement.';
 }
@@ -20,6 +21,15 @@ async function poll() {
   } catch (e) { clearInterval(timer); $('approve').disabled = false; $('link-status').textContent = e.message; }
 }
 let approved = false;
+$('disconnect').onclick = async () => {
+  $('disconnect').disabled = true;
+  try {
+    await api('auth/logout', {}); $('disconnect').hidden = true;
+    $('link-status').textContent = 'Vous êtes déconnecté.';
+    $('link-help').textContent = 'Pour reprendre, cliquez sur Se connecter dans votre rapport.';
+  } catch (e) { $('link-status').textContent = e.message; }
+  finally { $('disconnect').disabled = false; }
+};
 if (!/^[a-f0-9]{64}$/.test(ticket || '')) { $('approve').disabled = true; $('link-status').textContent = 'Ouvrez cette page avec le bouton Se connecter du rapport.'; }
 $('approve').onclick = async () => {
   $('approve').disabled = true;
