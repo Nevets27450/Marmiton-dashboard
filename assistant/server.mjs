@@ -37,7 +37,7 @@ const server = http.createServer(async (req, res) => {
   if (hosted) res.setHeader('Strict-Transport-Security', 'max-age=31536000');
   if (req.headers.host !== expectedHost) return json(res, 403, { error: 'Adresse du serveur invalide.' });
   const url = new URL(req.url, origin);
-  if (req.method === 'GET' && url.pathname === '/healthz') return json(res, 200, { status: 'ok' });
+  if (req.method === 'GET' && url.pathname === '/healthz') return json(res, 200, { status: 'ok', release: process.env.RENDER_GIT_COMMIT?.slice(0, 7) || 'local' });
   // A sandboxed Power BI visual has an opaque (null) origin. It must be
   // explicitly paired from the local browser; CORS alone never grants access.
   const visualRoute = ['/api/visual/connect', '/api/status', '/api/chat', '/api/chat/reset'].includes(url.pathname);

@@ -1,10 +1,28 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { ConversationStore, runConversation } from './conversation.mjs';
-import { readStream, createPlanner } from './providers.mjs';
+import { readStream, createPlanner, geminiFetch } from './providers.mjs';
 import { socialPlan } from './social.mjs';
 const plan = overrides => ({ operation: 'count', note: 'all', rating: null, minMinutes: null, maxMinutes: null, ingredient: null, limit: 5, clarification: '', ...overrides });
 const collect = async iterable => { const events = []; for await (const e of iterable) events.push(e); return events; };
+
+test('Gemini 503 is retried once; quota and authentication errors are never retried', async () => {
+  let calls = 0, waits = 0, cancelled = false;
+  const response = await geminiFetch(async () => ++calls === 1 ? { status: 503, body: { cancel: async () => { cancelled = true; } } } : { status: 200 }, 'test', {}, async ms => { assert.equal(ms, 1200); waits++; });
+  assert.equal(response.status, 200); assert.equal(calls, 2); assert.equal(waits, 1); assert.equal(cancelled, true);
+  for (const status of [429, 401, 403, 400, 404]) {
+    calls = 0; const r = await geminiFetch(async () => { calls++; return { status }; }, 'test', {}, async () => assert.fail('No backoff for permanent/quota errors'));
+    assert.equal(r.status, status); assert.equal(calls, 1);
+  }
+  calls = 0; const persistent = await geminiFetch(async () => { calls++; return { status: 503 }; }, 'test', {}, async () => {});
+  assert.equal(persistent.status, 503); assert.equal(calls, 2);
+});
+
+test('cancelling the 503 backoff prevents another Gemini request', async () => {
+  const abort = new AbortController(); let calls = 0;
+  await assert.rejects(geminiFetch(async () => { calls++; return { status: 503 }; }, 'test', { signal: abort.signal }, async () => { abort.abort(); }), { name: 'AbortError' });
+  assert.equal(calls, 1);
+});
 
 test('social messages skip LLM and Power BI, while mixed questions retain analytical context', async () => {
   const planner = createPlanner({}, async () => { throw new Error('Social messages must not call the LLM'); });

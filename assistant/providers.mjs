@@ -1,5 +1,17 @@
 import { instructions, planSchema, validatePlan } from './queries.mjs';
 import { socialPlan } from './social.mjs';
+import { setTimeout as delay } from 'node:timers/promises';
+
+// Retry only an explicit temporary unavailability, once, before consuming any
+// response stream. Never retry quota, authentication or ambiguous network errors.
+export async function geminiFetch(fetchImpl, url, options, wait = delay) {
+  const response = await fetchImpl(url, options);
+  if (response.status !== 503) return response;
+  await response.body?.cancel?.();
+  await wait(1200, undefined, { signal: options.signal });
+  options.signal?.throwIfAborted();
+  return fetchImpl(url, options);
+}
 
 export function createPlanner(config, fetchImpl = fetch) {
   return async (question, history = [], signal) => {
@@ -19,7 +31,7 @@ export function createPlanner(config, fetchImpl = fetch) {
       return validatePlan(JSON.parse((await response.json()).message.content));
     }
     if (!config.apiKey) throw new Error('Ajoute GEMINI_API_KEY dans assistant/.env, puis redémarre le serveur.');
-    response = await fetchImpl(`https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(config.model)}:generateContent`, {
+    response = await geminiFetch(fetchImpl, `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(config.model)}:generateContent`, {
       method: 'POST', headers: { 'Content-Type': 'application/json', 'x-goog-api-key': config.apiKey }, signal: requestSignal(45000),
       body: JSON.stringify({ systemInstruction: { parts: [{ text: instructions }] }, contents: messages.map(m => ({ role: m.role === 'assistant' ? 'model' : 'user', parts: [{ text: m.content }] })), generationConfig: { responseMimeType: 'application/json', responseJsonSchema: planSchema, temperature: 0, maxOutputTokens: 1500 } })
     });
@@ -27,6 +39,7 @@ export function createPlanner(config, fetchImpl = fetch) {
       if (response.status === 429) throw new Error('Quota Gemini atteint. Réessaie plus tard ; aucun basculement payant automatique n’est effectué.');
       if ([400, 401, 403].includes(response.status)) throw new Error(`Accès Gemini refusé (${response.status}). Vérifie la clé, les restrictions du projet et le modèle configuré.`);
       if (response.status === 404) throw new Error('Modèle Gemini indisponible. Renseigne dans GEMINI_MODEL un modèle accessible avec ton quota gratuit.');
+      if (response.status === 503) throw new Error('Gemini est temporairement indisponible (503), même après une nouvelle tentative automatique. Réessaie dans quelques instants.');
       throw new Error(`Gemini indisponible (${response.status}).`);
     }
     const result = await response.json();
@@ -65,7 +78,7 @@ Ne prétends pas analyser les commentaires. Une relance est facultative, seuleme
     if (config.provider === 'ollama') {
       response = await fetchImpl('http://127.0.0.1:11434/api/chat', { method: 'POST', signal: requestSignal, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ model: config.ollamaModel, stream: true, messages: [{ role: 'system', content: system }, { role: 'user', content: input }], options: { temperature: 0.2 } }) });
     } else {
-      response = await fetchImpl(`https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(config.model)}:streamGenerateContent?alt=sse`, { method: 'POST', signal: requestSignal, headers: { 'Content-Type': 'application/json', 'x-goog-api-key': config.apiKey }, body: JSON.stringify({ systemInstruction: { parts: [{ text: system }] }, contents: [{ role: 'user', parts: [{ text: input }] }], generationConfig: { temperature: 0.2, maxOutputTokens: 2000 } }) });
+      response = await geminiFetch(fetchImpl, `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(config.model)}:streamGenerateContent?alt=sse`, { method: 'POST', signal: requestSignal, headers: { 'Content-Type': 'application/json', 'x-goog-api-key': config.apiKey }, body: JSON.stringify({ systemInstruction: { parts: [{ text: system }] }, contents: [{ role: 'user', parts: [{ text: input }] }], generationConfig: { temperature: 0.2, maxOutputTokens: 2000 } }) });
     }
     if (!response.ok || !response.body) throw new Error(response.status === 429 ? 'Quota de rédaction atteint.' : 'Rédaction IA indisponible.');
     let length = 0; let emitted = false;
