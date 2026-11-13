@@ -27,7 +27,7 @@ $('approve').onclick = async () => {
     if (!approved) { await api('visual/approve', { ticket }); approved = true; }
     const status = await api('status'); if (status.connected) return connected();
     const auth = await api('auth/start', {}); const url = new URL(auth.url);
-    if (url.protocol !== 'https:' || !['microsoft.com', 'www.microsoft.com', 'login.microsoftonline.com'].includes(url.hostname)) throw new Error('Adresse Microsoft inattendue.');
+    if (url.protocol !== 'https:' || !['microsoft.com', 'www.microsoft.com', 'login.microsoft.com', 'login.microsoftonline.com'].includes(url.hostname)) throw new Error('Adresse Microsoft inattendue.');
     $('login-code').textContent = auth.code; $('login-link').href = url.href; $('microsoft').hidden = false;
     $('link-status').textContent = 'En attente de votre validation Microsoft…'; timer = setInterval(poll, 3000);
   } catch (e) { $('approve').disabled = false; $('link-status').textContent = e.message; }
