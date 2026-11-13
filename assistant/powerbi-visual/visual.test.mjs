@@ -26,9 +26,19 @@ test('Send clicks call chat directly without relying on sandbox-blocked form sub
       return new Response('data: {"type":"delta","text":"Avec plaisir !"}\n\ndata: {"type":"done"}\n\n');
     }
   };
-  vm.runInNewContext(compiled, context);
+  const storageData = new Map();
+  const storage = { status: async () => 0, get: async key => { if (!storageData.has(key)) throw Error('Absent'); return storageData.get(key); }, set: async (key, value) => { storageData.set(key, value); return { success: true }; }, remove: key => storageData.delete(key) };
+  function loadVisual() {
+    const cache = {}, result = {};
+    const cacheSource = ts.transpileModule(readFileSync(new URL('./src/session-cache.ts', import.meta.url), 'utf8'), { compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2020 } }).outputText;
+    vm.runInNewContext(cacheSource, { ...context, exports: cache });
+    vm.runInNewContext(compiled, { ...context, exports: result, require: name => name === './session-cache' ? cache : {} });
+    return result.Visual;
+  }
+  exported.Visual = loadVisual();
   const container = new Element('div');
-  const visual = new exported.Visual({ element: container, host: { launchUrl(url) { opened.push(url); }, eventService: { renderingStarted() {}, renderingFinished() {} } } });
+  const host = { storageV2Service: storage, launchUrl(url) { opened.push(url); }, eventService: { renderingStarted() {}, renderingFinished() {} } };
+  const visual = new exported.Visual({ element: container, host });
   const nodes = walk(container);
   assert.equal(nodes.some(n => n.tagName === 'form'), false);
   assert.equal(nodes.some(n => n.type === 'password'), false);
@@ -44,4 +54,14 @@ test('Send clicks call chat directly without relying on sandbox-blocked form sub
   assert.equal(JSON.parse(request.options.body).question, 'merci'); assert.equal(send.disabled, false);
   assert.ok(walk(container).some(n => n.textContent === 'Avec plaisir !'));
   visual.destroy();
+  await new Promise(resolve => setTimeout(resolve, 10));
+  assert.equal(storageData.size, 1); assert.equal([...storageData.values()][0].includes('accessToken'), false);
+  const restoredContainer = new Element('div'), ReloadedVisual = loadVisual();
+  const restored = new ReloadedVisual({ element: restoredContainer, host });
+  const restoredSend = walk(restoredContainer).find(n => n.textContent === 'Envoyer ↑');
+  for (let i = 0; i < 30 && restoredSend.disabled; i++) await new Promise(resolve => setTimeout(resolve, 5));
+  assert.equal(restoredSend.disabled, false, 'A recreated sandbox restores its connection automatically');
+  assert.equal(opened.length, 1, 'Restoration must not reopen Microsoft');
+  assert.equal(calls.filter(c => c.url.endsWith('/visual/connect')).length, 1);
+  restored.destroy();
 });

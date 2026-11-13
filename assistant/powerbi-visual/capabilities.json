@@ -5,6 +5,7 @@
   "supportsLandingPage": true,
   "supportsEmptyDataView": true,
   "privileges": [
+    { "name": "LocalStorage", "essential": false },
     {
       "name": "WebAccess",
       "essential": true,

@@ -71,7 +71,7 @@ const server = http.createServer(async (req, res) => {
         return json(res, 200, { approved: true });
       }
       if (req.method === 'GET' && url.pathname === '/api/visual/pairing' && browserSession) return json(res, 200, { code: active.pairing });
-      if (req.method === 'GET' && url.pathname === '/api/status') return json(res, 200, { ...powerbi.status(), provider: config.provider, model: config.provider === 'gemini' ? config.model : config.ollamaModel, llmConfigured: config.provider === 'ollama' || !!config.apiKey });
+      if (req.method === 'GET' && url.pathname === '/api/status') return json(res, 200, { ...powerbi.status(), expiresAt: active.expiresAt, provider: config.provider, model: config.provider === 'gemini' ? config.model : config.ollamaModel, llmConfigured: config.provider === 'ollama' || !!config.apiKey });
       if (req.method !== 'POST') return json(res, 405, { error: 'Méthode non autorisée.' });
       const input = await body(req);
       if (url.pathname === '/api/auth/start') {

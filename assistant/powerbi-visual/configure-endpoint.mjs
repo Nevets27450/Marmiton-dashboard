@@ -9,6 +9,6 @@ if (!/^const base = .+;$/m.test(source)) throw new Error('Déclaration du serveu
 writeFileSync(target, source.replace(/^const base = .+;$/m, `const base = ${JSON.stringify(url.origin)};`));
 const capabilitiesFile = new URL('./capabilities.json', import.meta.url);
 const capabilities = JSON.parse(readFileSync(capabilitiesFile, 'utf8'));
-capabilities.privileges = [{ name: 'WebAccess', essential: true, parameters: [url.origin] }];
+capabilities.privileges = [...capabilities.privileges.filter(p => p.name !== 'WebAccess'), { name: 'WebAccess', essential: true, parameters: [url.origin] }];
 writeFileSync(capabilitiesFile, JSON.stringify(capabilities, null, 2) + '\n');
 console.log('Serveur du visuel configuré : ' + url.origin + '. Recompiler le paquet avant import.');

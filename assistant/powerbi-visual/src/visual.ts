@@ -3,6 +3,7 @@ import '../style/visual.less';
 import IVisual = powerbi.extensibility.visual.IVisual;
 import VisualConstructorOptions = powerbi.extensibility.visual.VisualConstructorOptions;
 import VisualUpdateOptions = powerbi.extensibility.visual.VisualUpdateOptions;
+import { SessionCache } from './session-cache';
 const base = "https://marmiton-assistant.onrender.com";
 function el<K extends keyof HTMLElementTagNameMap>(tag: K, text?: string): HTMLElementTagNameMap[K] {
   const node = document.createElement(tag); if (text) node.textContent = text; return node;
@@ -14,14 +15,17 @@ export class Visual implements IVisual {
   private code = ''; private conversationId: string | null = null;
   private pollTimer?: ReturnType<typeof setTimeout>; private ready = false;
   private authorizationUrl = ''; private connectDeadline = 0;
+  private cache: SessionCache; private expiresAt = 0; private lifecycle = 0;
   private abort?: AbortController; private busy = false; private destroyed = false;
   private events: powerbi.extensibility.IVisualEventService;
   constructor(options?: VisualConstructorOptions) {
     if (!options) throw new Error('Power BI doit initialiser le visuel.');
+    this.cache = new SessionCache(options.host.storageV2Service);
     this.events = options.host.eventService; this.root.className = 'marmiton-visual';
     const toolbar = el('div'); toolbar.className = 'local-toolbar';
     this.connect.onclick = async () => {
       if (this.busy) return;
+      this.lifecycle++;
       clearTimeout(this.pollTimer);
       this.connect.disabled = true; this.send.disabled = true; this.ready = false;
       this.state.textContent = 'Préparation de la connexion…';
@@ -32,6 +36,7 @@ export class Visual implements IVisual {
         if (url.origin !== base || url.pathname !== '/connect' || !/^#ticket=[a-f0-9]{64}$/.test(url.hash) || !/^[a-f0-9]{64}$/.test(connection.visualToken)) throw new Error('Réponse de connexion inattendue.');
         this.code = connection.visualToken; this.authorizationUrl = url.href;
         this.connectDeadline = Date.now() + connection.expiresIn * 1000; this.conversationId = null;
+        this.expiresAt = this.connectDeadline; void this.saveSession();
         this.state.textContent = 'Validez la connexion dans le navigateur…'; this.connect.textContent = 'Relancer la connexion ↗';
         options.host.launchUrl(url.href); void this.pollConnection();
       } catch (e) { this.state.textContent = (e as Error).message; }
@@ -41,7 +46,7 @@ export class Visual implements IVisual {
     reset.onclick = async () => {
       if (this.busy) return;
       try { if (this.conversationId) await this.json('chat/reset', { conversationId: this.conversationId });
-        this.conversationId = null; this.messages.replaceChildren(); this.welcome();
+        this.conversationId = null; void this.saveSession(); this.messages.replaceChildren(); this.welcome();
       } catch (e) { this.state.textContent = (e as Error).message; }
     };
     this.state.textContent = 'Connectez votre compte pour commencer.'; toolbar.append(this.state, this.connect, reset);
@@ -56,6 +61,16 @@ export class Visual implements IVisual {
     const actions = el('div'); actions.className = 'actions'; actions.append(this.stop, this.send);
     form.append(this.input, actions);
     this.root.append(toolbar, this.messages, form); options.element.append(this.root);
+    void this.restoreSession();
+  }
+  private async restoreSession(): Promise<void> {
+    const generation = this.lifecycle; const saved = await this.cache.load();
+    if (!saved || this.destroyed || generation !== this.lifecycle) return;
+    this.code = saved.token; this.conversationId = saved.conversationId; this.expiresAt = saved.expiresAt; this.connectDeadline = saved.connectDeadline;
+    this.state.textContent = 'Restauration de la connexion…'; await this.pollConnection();
+  }
+  private saveSession(): Promise<void> {
+    return this.cache.save({ token: this.code, conversationId: this.conversationId, expiresAt: this.expiresAt, connectDeadline: this.connectDeadline });
   }
   private async pollConnection(): Promise<void> {
     clearTimeout(this.pollTimer);
@@ -64,10 +79,12 @@ export class Visual implements IVisual {
       const status = await this.json('status'); if (this.destroyed) return;
       this.ready = !!status.connected && !!status.llmConfigured; this.send.disabled = !this.ready || this.busy;
       if (status.connected) {
+        this.expiresAt = status.expiresAt || this.expiresAt || Date.now() + 60 * 60 * 1000;
         this.authorizationUrl = ''; this.connectDeadline = 0; this.connect.textContent = 'Se reconnecter ↗';
+        void this.saveSession();
         if (!this.busy) this.state.textContent = status.llmConfigured ? 'Power BI connecté' : 'Le service IA n’est pas configuré.';
       } else if (!this.busy) this.state.textContent = status.awaitingApproval ? 'Autorisez la connexion dans le navigateur…' : status.pending ? 'Validation Microsoft en attente…' : status.message || 'Connectez Microsoft dans le navigateur.';
-      if (!status.connected && this.connectDeadline && Date.now() > this.connectDeadline) { this.code = ''; throw new Error('Connexion expirée. Cliquez sur Se connecter pour réessayer.'); }
+      if (!status.connected && this.connectDeadline && Date.now() > this.connectDeadline) { this.code = ''; void this.cache.clear(); throw new Error('Connexion expirée. Cliquez sur Se connecter pour réessayer.'); }
     } catch (e) { this.ready = false; this.send.disabled = true; if (!this.destroyed) this.state.textContent = (e as Error).message; }
     if (!this.destroyed && this.code) this.pollTimer = setTimeout(() => { void this.pollConnection(); }, this.ready ? 30000 : 3000);
   }
@@ -86,7 +103,7 @@ export class Visual implements IVisual {
     try { response = await fetch(base + '/api/' + route, { method: data === undefined ? 'GET' : 'POST', headers, body: data === undefined ? undefined : JSON.stringify(data), signal }); }
     catch (e) { if (signal?.aborted) throw e; throw new Error('Serveur Marmiton inaccessible. Réessayez après son réveil ou vérifiez les autorisations réseau Power BI.'); }
     if (!response.ok) {
-      if ([401, 403].includes(response.status)) { this.code = ''; this.ready = false; this.authorizationUrl = ''; this.connect.textContent = 'Se connecter ↗'; }
+      if ([401, 403].includes(response.status)) { this.code = ''; this.ready = false; this.authorizationUrl = ''; void this.cache.clear(); this.connect.textContent = 'Se connecter ↗'; }
       const result = await response.json(); throw new Error(result.error || 'Le serveur ne répond pas.');
     }
     return response;
@@ -105,7 +122,7 @@ export class Visual implements IVisual {
       if (!response.body) throw new Error('Flux indisponible.');
       const reader = response.body.getReader(), decoder = new TextDecoder(); let buffer = '';
       const event = (data: any) => {
-        if (data.type === 'conversation') this.conversationId = data.id;
+        if (data.type === 'conversation') { this.conversationId = data.id; void this.saveSession(); }
         if (data.type === 'status') this.state.textContent = data.text;
         if (data.type === 'delta') { text += data.text; prose.textContent = text; }
         if (data.type === 'replace') { text = data.text; prose.textContent = text; }
