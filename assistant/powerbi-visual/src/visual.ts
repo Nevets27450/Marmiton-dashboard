@@ -8,6 +8,14 @@ const base = "https://marmiton-assistant.onrender.com";
 function el<K extends keyof HTMLElementTagNameMap>(tag: K, text?: string): HTMLElementTagNameMap[K] {
   const node = document.createElement(tag); if (text) node.textContent = text; return node;
 }
+async function minimumTypingDelay(started: number, signal: AbortSignal): Promise<void> {
+  signal.throwIfAborted(); const remaining = 1000 - (Date.now() - started); if (remaining <= 0) return;
+  await new Promise<void>((resolve, reject) => {
+    const abort = () => { clearTimeout(timer); signal.removeEventListener('abort', abort); reject(signal.reason); };
+    const timer = setTimeout(() => { signal.removeEventListener('abort', abort); resolve(); }, remaining);
+    signal.addEventListener('abort', abort, { once: true });
+  });
+}
 export class Visual implements IVisual {
   private root = el('div'); private messages = el('div'); private state = el('span');
   private input = el('textarea'); private send = el('button', 'Envoyer ↑');
@@ -166,13 +174,17 @@ export class Visual implements IVisual {
     this.messages.querySelector('.welcome')?.remove();
     const user = el('div', question); user.className = 'message user';
     const answer = el('div'); answer.className = 'message assistant';
-    const prose = el('div'); prose.className = 'prose'; answer.append(prose); this.messages.append(user, answer);
+    const typing = el('div'); typing.className = 'typing-indicator'; typing.setAttribute('role', 'status'); typing.setAttribute('aria-label', 'Réponse en cours');
+    for (let i = 0; i < 3; i++) { const dot = el('span'); dot.setAttribute('aria-hidden', 'true'); typing.append(dot); }
+    const prose = el('div'); prose.className = 'prose'; answer.append(typing, prose); this.messages.append(user, answer);
+    const started = Date.now(); let firstText = true;
     this.abort = new AbortController(); let text = '';
     try {
       const response = await this.request('chat', { question, conversationId: this.conversationId, stream: true }, this.abort.signal);
       if (!response.body) throw new Error('Flux indisponible.');
       const reader = response.body.getReader(), decoder = new TextDecoder(); let buffer = '';
-      const event = (data: any) => {
+      const event = async (data: any) => {
+        if (firstText && ['delta', 'replace'].includes(data.type)) { await minimumTypingDelay(started, this.abort!.signal); firstText = false; typing.remove(); }
         if (data.type === 'conversation') { this.conversationId = data.id; this.displayedConversation = data.id; void this.saveSession(); }
         if (data.type === 'status') this.state.textContent = data.text;
         if (data.type === 'delta') { text += data.text; prose.textContent = text; }
@@ -190,7 +202,7 @@ export class Visual implements IVisual {
           while ((boundary = buffer.indexOf('\n\n')) >= 0) {
             const frame = buffer.slice(0, boundary); buffer = buffer.slice(boundary + 2);
             const data = frame.split('\n').filter(line => line.startsWith('data:')).map(line => line.slice(5).trimStart()).join('\n');
-            if (data) event(JSON.parse(data));
+            if (data) await event(JSON.parse(data));
           }
           if (done) break;
         }
@@ -199,7 +211,7 @@ export class Visual implements IVisual {
       this.state.textContent = this.abort.signal.aborted ? 'Réponse arrêtée' : (e as Error).message;
       if (!text) prose.textContent = this.state.textContent;
     } finally {
-      this.busy = false; this.stop.hidden = true; if (!this.destroyed) this.send.disabled = !this.ready;
+      typing.remove(); this.busy = false; this.stop.hidden = true; if (!this.destroyed) this.send.disabled = !this.ready;
     }
   }
   public update(options: VisualUpdateOptions): void {

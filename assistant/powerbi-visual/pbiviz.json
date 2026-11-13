@@ -4,7 +4,7 @@
     "displayName": "Marmiton Assistant IA",
     "guid": "marmitonAssistant7E52235DDC224199B7B645E2E662ED14",
     "visualClassName": "Visual",
-    "version": "1.0.7.0",
+    "version": "1.0.8.0",
     "description": "Chat Marmiton connecté au serveur HTTPS marmiton-assistant.onrender.com.",
     "supportUrl": "https://github.com/Nevets27450/Marmiton-dashboard",
     "gitHubUrl": "https://github.com/Nevets27450/Marmiton-dashboard"

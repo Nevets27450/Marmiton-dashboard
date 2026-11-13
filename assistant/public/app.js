@@ -82,14 +82,14 @@ function renderProse(target, text) {
 async function readEvents(response, onEvent) {
   if (!response.body) throw new Error('La réponse en direct n’est pas disponible. Redémarre le serveur.');
   const reader = response.body.getReader(); const decoder = new TextDecoder(); let buffer = ''; let doneEvent = false;
-  const frame = text => { const data = text.split('\n').filter(l => l.startsWith('data:')).map(l => l.slice(5).trim()).join('\n'); if (!data) return; const event = JSON.parse(data); onEvent(event); if (event.type === 'done') doneEvent = true; };
+  const frame = async text => { const data = text.split('\n').filter(l => l.startsWith('data:')).map(l => l.slice(5).trim()).join('\n'); if (!data) return; const event = JSON.parse(data); await onEvent(event); if (event.type === 'done') doneEvent = true; };
   try {
     while (true) {
       const { value, done } = await reader.read(); if (done) break;
       buffer += decoder.decode(value, { stream: true }); buffer = buffer.replace(/\r\n/g, '\n');
-      let index; while ((index = buffer.indexOf('\n\n')) >= 0) { frame(buffer.slice(0, index)); buffer = buffer.slice(index + 2); }
+      let index; while ((index = buffer.indexOf('\n\n')) >= 0) { await frame(buffer.slice(0, index)); buffer = buffer.slice(index + 2); }
     }
-    buffer += decoder.decode(); if (buffer.trim()) frame(buffer);
+    buffer += decoder.decode(); if (buffer.trim()) await frame(buffer);
     if (!doneEvent) throw new Error('La réponse a été interrompue. Vous pouvez réessayer.');
   } finally { await reader.cancel().catch(() => {}); reader.releaseLock(); }
 }
@@ -104,16 +104,28 @@ $('question-form').addEventListener('submit', async event => {
   event.preventDefault(); const question = $('question').value.trim(); if (!question || busy || !connected || !ready) return;
   busy = true; controller = new AbortController(); $('send').disabled = true; $('new-chat').disabled = true; $('disconnect').disabled = true; $('stop').hidden = false; $('messages').setAttribute('aria-busy', 'true');
   message('user', question); $('question').value = ''; const article = message('assistant', ''); article.classList.add('streaming');
-  const content = article.querySelector('.answer-text'); const phase = document.createElement('div'); phase.className = 'phase'; phase.textContent = 'Lecture de votre question…'; article.insertBefore(phase, content);
+  const content = article.querySelector('.answer-text'); const phase = document.createElement('div'); phase.className = 'typing-indicator'; phase.setAttribute('role', 'status'); phase.setAttribute('aria-label', 'Réponse en cours');
+  for (let i = 0; i < 3; i++) { const dot = document.createElement('span'); dot.setAttribute('aria-hidden', 'true'); phase.append(dot); } article.insertBefore(phase, content);
+  const started = Date.now(); let firstText = true;
   let answer = ''; let receivedResult = false; let successful = false;
   const note = text => { const p = document.createElement('p'); p.className = 'response-note'; p.textContent = text; article.append(p); };
   try {
     const response = await fetch('/api/chat', { method: 'POST', signal: controller.signal, headers: { 'x-marmiton-session': session, 'Content-Type': 'application/json' }, body: JSON.stringify({ question, conversationId, stream: true }) });
     if (!response.ok) { const error = await response.json(); throw new Error(error.error || 'Le chat ne répond pas.'); }
     if (!response.headers.get('content-type')?.includes('text/event-stream')) throw new Error('Redémarre le serveur Node pour activer la nouvelle conversation en direct.');
-    await readEvents(response, result => {
+    await readEvents(response, async result => {
+      if (firstText && ['delta', 'replace'].includes(result.type)) {
+        controller.signal.throwIfAborted(); const remaining = 1000 - (Date.now() - started);
+        if (remaining > 0) await new Promise((resolve, reject) => {
+          const signal = controller.signal;
+          const abort = () => { clearTimeout(timer); signal.removeEventListener('abort', abort); reject(signal.reason); };
+          const timer = setTimeout(() => { signal.removeEventListener('abort', abort); resolve(); }, remaining);
+          signal.addEventListener('abort', abort, { once: true });
+        });
+        firstText = false; phase.remove();
+      }
       if (result.type === 'conversation') conversationId = result.id;
-      if (result.type === 'status') { phase.textContent = result.text; $('progress').textContent = result.text; }
+      if (result.type === 'status') $('progress').textContent = result.text;
       if (result.type === 'delta' || result.type === 'replace') { answer = result.type === 'replace' ? result.text : answer + result.text; content.textContent = answer; }
       if (result.type === 'result') {
         receivedResult = true;

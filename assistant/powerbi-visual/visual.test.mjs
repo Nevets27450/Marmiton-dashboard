@@ -17,9 +17,9 @@ function walk(node) { return [node, ...node.children.flatMap(walk)]; }
 test('Send clicks call chat directly without relying on sandbox-blocked form submission', async () => {
   const source = readFileSync(new URL('./src/visual.ts', import.meta.url), 'utf8');
   const compiled = ts.transpileModule(source, { compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2020 } }).outputText;
-  const calls = []; const exported = {}; const opened = []; const ticket = 'b'.repeat(64), visualToken = 'a'.repeat(64); let polls = 0;
+  const calls = []; const exported = {}; const opened = []; const delays = []; const ticket = 'b'.repeat(64), visualToken = 'a'.repeat(64); let polls = 0;
   const conversationId = '12345678-1234-1234-1234-123456789abc';
-  const context = { exports: exported, require: () => ({}), document: { createElement: tag => new Element(tag) }, AbortController, TextDecoder, URL, setTimeout: (fn, ms) => setTimeout(fn, Math.min(ms, 5)), clearTimeout,
+  const context = { exports: exported, require: () => ({}), document: { createElement: tag => new Element(tag) }, AbortController, TextDecoder, URL, setTimeout: (fn, ms) => { delays.push(ms); return setTimeout(fn, Math.min(ms, 5)); }, clearTimeout,
     fetch: async (url, options) => {
       calls.push({ url, options });
       if (url.endsWith('/visual/connect')) return Response.json({ visualToken, authorizationUrl: 'https://marmiton-assistant.onrender.com/connect#ticket=' + ticket, expiresIn: 600 }, { status: 201 });
@@ -52,10 +52,13 @@ test('Send clicks call chat directly without relying on sandbox-blocked form sub
   assert.ok(polls >= 2, 'The visual must detect approval automatically by polling');
   const input = nodes.find(n => n.tagName === 'textarea'); input.value = 'merci';
   send.onclick();
+  const typing = walk(container).find(n => n.className === 'typing-indicator'); assert.ok(typing); assert.equal(typing.children.length, 3);
   for (let i = 0; i < 20 && send.disabled; i++) await new Promise(resolve => setTimeout(resolve, 5));
   const request = calls.find(call => call.url.endsWith('/chat')); assert.ok(request);
   assert.equal(JSON.parse(request.options.body).question, 'merci'); assert.equal(send.disabled, false);
   assert.ok(walk(container).some(n => n.textContent === 'Avec plaisir !'));
+  assert.equal(walk(container).some(n => n.className === 'typing-indicator'), false);
+  assert.ok(delays.some(ms => ms > 900 && ms <= 1000), 'Instant replies receive only the remaining part of the one-second transition');
   visual.destroy();
   await new Promise(resolve => setTimeout(resolve, 10));
   assert.equal(storageData.size, 1); assert.equal([...storageData.values()][0].includes('accessToken'), false);
@@ -70,6 +73,10 @@ test('Send clicks call chat directly without relying on sandbox-blocked form sub
   assert.ok(walk(restoredContainer).some(n => n.textContent === 'Avec plaisir !'), 'Messages are rehydrated after changing pages');
   assert.equal(calls.filter(c => c.url.endsWith('/chat')).length, 1, 'Restoration does not rerun Gemini or Power BI calculations');
   assert.equal([...storageData.values()][0].includes('Avec plaisir'), false, 'Chat text is not stored in the Power BI cache');
+  walk(restoredContainer).find(n => n.tagName === 'textarea').value = 'Merci encore'; restoredSend.onclick();
+  walk(restoredContainer).find(n => n.textContent === 'Arrêter').onclick();
+  for (let i = 0; i < 30 && restoredSend.disabled; i++) await new Promise(resolve => setTimeout(resolve, 5));
+  assert.equal(walk(restoredContainer).some(n => n.className === 'typing-indicator'), false, 'Stopping removes the indicator immediately');
   const logout = walk(restoredContainer).find(n => n.textContent === 'Se déconnecter'); assert.ok(logout);
   await logout.onclick();
   assert.ok(calls.some(c => c.url.endsWith('/visual/logout'))); assert.equal(storageData.size, 0);
