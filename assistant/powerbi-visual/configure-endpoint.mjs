@@ -1,0 +1,14 @@
+import { readFileSync, writeFileSync } from 'node:fs';
+const input = process.argv[2];
+if (!input) throw new Error('Usage: node configure-endpoint.mjs https://votre-serveur.onrender.com');
+const url = new URL(input);
+if (url.protocol !== 'https:' || url.username || url.password || url.search || url.hash || url.pathname !== '/') throw new Error('Fournir seulement une origine HTTPS.');
+const target = new URL('./src/visual.ts', import.meta.url);
+const source = readFileSync(target, 'utf8');
+if (!/^const base = .+;$/m.test(source)) throw new Error('Déclaration du serveur introuvable.');
+writeFileSync(target, source.replace(/^const base = .+;$/m, `const base = ${JSON.stringify(url.origin)};`));
+const capabilitiesFile = new URL('./capabilities.json', import.meta.url);
+const capabilities = JSON.parse(readFileSync(capabilitiesFile, 'utf8'));
+capabilities.privileges = [{ name: 'WebAccess', essential: true, parameters: [url.origin] }];
+writeFileSync(capabilitiesFile, JSON.stringify(capabilities, null, 2) + '\n');
+console.log('Serveur du visuel configuré : ' + url.origin + '. Recompiler le paquet avant import.');

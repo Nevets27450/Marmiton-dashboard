@@ -11,3 +11,14 @@
 # Fichiers temporaires
 *.tmp
 ~$*
+
+# Assistant : secrets et caches
+.env
+.env.*
+!.env.example
+**/node_modules/
+**/.auth/
+**/.npm-cache/
+**/.tmp/
+**/webpack.statistics.*.html
+assistant/powerbi-visual/dist/

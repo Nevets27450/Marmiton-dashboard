@@ -1,0 +1,18 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="marmiton-session" content="__SESSION__">
+  <title>Marmiton — Assistant IA</title>
+  <link rel="stylesheet" href="/style.css"><script src="/app.js" defer></script>
+</head>
+<body>
+  <header><span class="brand">Marmiton</span><span>Assistant IA</span></header>
+  <main>
+    <section class="intro"><h1>Une question sur Marmiton ?</h1></section>
+    <section class="connection" aria-label="Connexion"><div><strong id="connection">Vérification de la connexion…</strong><p id="provider"></p></div><div><button id="connect">Connecter Power BI</button><button id="disconnect" class="secondary" hidden>Déconnecter</button></div></section>
+    <section id="auth" hidden><h2>Connexion Microsoft</h2><p>Ouvrez <a id="auth-link" href="https://microsoft.com/devicelogin" target="_blank" rel="noopener noreferrer">la page de connexion Microsoft</a> avec votre compte universitaire, puis saisissez :</p><code id="auth-code"></code><p>Le jeton reste en mémoire sur cet ordinateur et n’est pas envoyé à Gemini.</p></section>
+    <div class="layout"><section class="chat"><div class="chat-heading"><h2>Assistant Marmiton</h2><button id="new-chat" class="secondary">＋ Nouvelle conversation</button></div><div id="messages" role="log" aria-label="Conversation" aria-busy="false"><div class="welcome"><span class="welcome-icon">M</span><h3>Que souhaitez-vous explorer ?</h3><div class="starter-prompts"><button class="example">Combien de recettes n’ont pas de note ?</button><button class="example">Quels sont les ingrédients les plus présents ?</button></div></div></div><form id="question-form"><label for="question" class="sr-only">Votre message</label><textarea id="question" maxlength="2000" rows="2" placeholder="Posez votre question…" required></textarea><div class="submit"><span id="progress" role="status" aria-live="polite">Entrée pour envoyer · Maj + Entrée pour une nouvelle ligne</span><div class="composer-actions"><button id="stop" class="secondary" hidden>■ Arrêter</button><button id="send" disabled>Envoyer ↑</button></div></div></form></section></div>
+    <details><summary>Connecter le visuel Power BI Desktop</summary><p>Copiez ce code dans le visuel du rapport. Il change à chaque redémarrage du serveur et donne accès au chat local : ne le partagez pas.</p><button id="show-pairing" type="button">Afficher le code de jumelage</button><input id="visual-pairing" aria-label="Code de jumelage du visuel" readonly hidden style="width:100%;box-sizing:border-box"></details>
+  </main>
+</body></html>

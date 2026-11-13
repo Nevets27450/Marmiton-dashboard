@@ -1,0 +1,10 @@
+{
+  "dataRoles": [],
+  "dataViewMappings": [],
+  "objects": {},
+  "supportsLandingPage": true,
+  "supportsEmptyDataView": true,
+  "privileges": [
+    { "name": "WebAccess", "essential": true, "parameters": ["http://127.0.0.1:8787"] }
+  ]
+}

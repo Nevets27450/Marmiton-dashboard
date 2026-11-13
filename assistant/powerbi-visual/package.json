@@ -1,0 +1,11 @@
+{
+  "name": "marmiton-assistant-visual",
+  "private": true,
+  "version": "1.0.0",
+  "scripts": { "package": "pbiviz package" },
+  "devDependencies": {
+    "powerbi-visuals-tools": "latest",
+    "powerbi-visuals-api": "latest",
+    "typescript": "latest"
+  }
+}

@@ -1,0 +1,25 @@
+services:
+  - type: web
+    name: marmiton-assistant
+    runtime: node
+    plan: free
+    region: frankfurt
+    rootDir: assistant
+    buildCommand: node --check server.mjs
+    startCommand: node server.mjs
+    healthCheckPath: /healthz
+    envVars:
+      - key: NODE_VERSION
+        value: 22
+      - key: APP_MODE
+        value: hosted
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: GEMINI_MODEL
+        value: gemini-3.1-flash-lite
+      - key: POWERBI_TENANT_ID
+        value: b8c19512-2aed-471d-a8d1-9b06e7da786a
+      - key: POWERBI_CLIENT_ID
+        value: b3c32dc4-9186-437d-9558-b1157fcde8bf
+      - key: POWERBI_DATASET_ID
+        value: 1d4485a8-e6be-4930-85f1-853348554349

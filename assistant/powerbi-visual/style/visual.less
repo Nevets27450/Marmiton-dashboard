@@ -1,0 +1,24 @@
+.marmiton-visual {
+  display:flex;flex-direction:column;box-sizing:border-box;overflow:hidden;
+  background:#f8f6f1;color:#29352f;font:14px 'Segoe UI',sans-serif;
+  *{box-sizing:border-box;}
+  button{border:1px solid #e3e5de;background:white;color:#29352f;border-radius:8px;padding:9px 14px;cursor:pointer;font:inherit;}
+  button:disabled{opacity:.5;cursor:default;}
+  [hidden]{display:none!important;}
+  .local-toolbar{display:flex;align-items:center;gap:10px;padding:10px 16px;border-bottom:1px solid #e3e5de;flex-shrink:0;}
+  .local-toolbar span{flex:1;color:#66736b;font-size:12px;}
+  .pairing{display:flex;gap:10px;padding:12px 20px;}
+  .pairing input{flex:1;min-width:0;padding:10px;border:1px solid #ddd;border-radius:8px;}
+  .messages{flex:1;min-height:0;overflow:auto;padding:20px 6%;}
+  .welcome{text-align:center;padding:24px 0;h2{font-size:25px;}p{color:#66736b;}button{margin:6px;}}
+  .message{padding:14px 18px;line-height:1.6;margin:12px 0;border-radius:14px;max-width:94%;overflow-wrap:anywhere;}
+  .user{background:#f3dfd5;margin-left:auto;width:fit-content;white-space:pre-wrap;}
+  .assistant{background:white;border:1px solid #e9e7df;}
+  .prose{white-space:pre-wrap;}
+  details{font-size:11px;color:#66736b;margin-top:12px;overflow:auto;}
+  table{border-collapse:collapse;}td,th{padding:5px 10px;text-align:left;border-bottom:1px solid #eee;}
+  .composer{flex-shrink:0;padding:12px 6% 16px;border-top:1px solid #e3e5de;display:flex;gap:12px;align-items:center;}
+  textarea{flex:1;min-width:0;resize:none;border:1px solid #ddd;border-radius:12px;background:white;padding:12px;font:inherit;color:inherit;}
+  .actions{display:flex;gap:8px;}
+  .actions button:last-child{background:#db4b38;color:white;border-color:#db4b38;}
+}
