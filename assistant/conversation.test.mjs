@@ -73,6 +73,19 @@ test('cancellation does not commit a half-finished turn', async () => {
   const controller = new AbortController(); const conversation = new ConversationStore().get();
   await assert.rejects(collect(runConversation({ question: 'Total ?', conversation, signal: controller.signal, planner: async () => plan(), powerbi: { execute: async () => [] }, responder: async function* () { yield 'Début'; controller.abort(); yield 'suite'; } })), { name: 'AbortError' });
   assert.equal(conversation.turns.length, 0);
+  assert.equal(conversation.messages.length, 0);
+});
+
+test('display history includes social replies and survives analytical context trimming', async () => {
+  const store = new ConversationStore(), conversation = store.get();
+  const social = createPlanner({}, async () => assert.fail('No LLM call for thanks'));
+  for (let i = 0; i < 9; i++) await collect(runConversation({ question: 'Merci', conversation, planner: social }));
+  assert.equal(conversation.turns.length, 0); assert.equal(store.history(conversation.id).length, 9);
+  assert.equal(store.history(conversation.id)[0].answer, 'Avec plaisir !');
+  for (let i = 0; i < 44; i++) await collect(runConversation({ question: 'ok', conversation, planner: social }));
+  assert.equal(store.history(conversation.id).length, 50);
+  const other = new ConversationStore(); assert.throws(() => other.history(conversation.id), /expirée/);
+  store.remove(conversation.id); assert.throws(() => store.history(conversation.id), /expirée/);
 });
 test('SSE reader preserves split accents and ignores heartbeat frames', async () => {
   const text = ': keepalive\r\n\r\ndata: {"text":"réponse"}\r\n\r\ndata: [DONE]\r\n\r\n';

@@ -16,6 +16,7 @@ export class Visual implements IVisual {
   private pollTimer?: ReturnType<typeof setTimeout>; private ready = false;
   private authorizationUrl = ''; private connectDeadline = 0;
   private cache: SessionCache; private expiresAt = 0; private lifecycle = 0;
+  private displayedConversation: string | null = null;
   private abort?: AbortController; private busy = false; private destroyed = false;
   private events: powerbi.extensibility.IVisualEventService;
   constructor(options?: VisualConstructorOptions) {
@@ -35,7 +36,7 @@ export class Visual implements IVisual {
         const url = new URL(connection.authorizationUrl);
         if (url.origin !== base || url.pathname !== '/connect' || !/^#ticket=[a-f0-9]{64}$/.test(url.hash) || !/^[a-f0-9]{64}$/.test(connection.visualToken)) throw new Error('Réponse de connexion inattendue.');
         this.code = connection.visualToken; this.authorizationUrl = url.href;
-        this.connectDeadline = Date.now() + connection.expiresIn * 1000; this.conversationId = null;
+        this.connectDeadline = Date.now() + connection.expiresIn * 1000; this.conversationId = null; this.displayedConversation = null;
         this.expiresAt = this.connectDeadline; void this.saveSession();
         this.state.textContent = 'Validez la connexion dans le navigateur…'; this.connect.textContent = 'Relancer la connexion ↗';
         options.host.launchUrl(url.href); void this.pollConnection();
@@ -46,7 +47,7 @@ export class Visual implements IVisual {
     reset.onclick = async () => {
       if (this.busy) return;
       try { if (this.conversationId) await this.json('chat/reset', { conversationId: this.conversationId });
-        this.conversationId = null; void this.saveSession(); this.messages.replaceChildren(); this.welcome();
+        this.conversationId = null; this.displayedConversation = null; void this.saveSession(); this.messages.replaceChildren(); this.welcome();
       } catch (e) { this.state.textContent = (e as Error).message; }
     };
     this.state.textContent = 'Connectez votre compte pour commencer.'; toolbar.append(this.state, this.connect, reset);
@@ -77,7 +78,11 @@ export class Visual implements IVisual {
     if (this.destroyed || !this.code) return;
     try {
       const status = await this.json('status'); if (this.destroyed) return;
-      this.ready = !!status.connected && !!status.llmConfigured; this.send.disabled = !this.ready || this.busy;
+      this.ready = !!status.connected && !!status.llmConfigured;
+      this.send.disabled = true;
+      if (status.connected && this.conversationId && this.displayedConversation !== this.conversationId && !this.busy) await this.restoreHistory();
+      if (this.destroyed) return;
+      this.send.disabled = !this.ready || this.busy;
       if (status.connected) {
         this.expiresAt = status.expiresAt || this.expiresAt || Date.now() + 60 * 60 * 1000;
         this.authorizationUrl = ''; this.connectDeadline = 0; this.connect.textContent = 'Se reconnecter ↗';
@@ -95,6 +100,37 @@ export class Visual implements IVisual {
       const button = el('button', text); button.onclick = () => { this.input.value = text; this.input.focus(); }; welcome.append(button);
     }
     this.messages.append(welcome);
+  }
+  private async restoreHistory(): Promise<void> {
+    const id = this.conversationId;
+    try {
+      const result = await this.json('chat/history', { conversationId: id });
+      if (this.destroyed || this.conversationId !== id) return;
+      this.messages.replaceChildren();
+      for (const turn of result.messages) {
+        const user = el('div', turn.question); user.className = 'message user';
+        const answer = el('div'); answer.className = 'message assistant';
+        const prose = el('div', turn.answer); prose.className = 'prose'; answer.append(prose);
+        if (turn.rows?.length) this.renderResult(answer, turn);
+        if (turn.warning) answer.append(el('small', turn.warning));
+        this.messages.append(user, answer);
+      }
+      if (!result.messages.length) this.welcome();
+      this.displayedConversation = id; this.messages.scrollTop = this.messages.scrollHeight;
+    } catch (e) {
+      if (/Conversation (expirée|invalide)/.test((e as Error).message)) {
+        this.conversationId = null; this.displayedConversation = null; void this.saveSession();
+        this.messages.replaceChildren(); this.welcome();
+      } else throw e;
+    }
+  }
+  private renderResult(answer: HTMLElement, data: any): void {
+    const details = el('details'); details.append(el('summary', 'Sources et calcul'), el('p', data.scope));
+    const table = el('table');
+    const rows = data.rows || [], keys = Array.from(new Set<string>(rows.flatMap((r: Record<string, unknown>) => Object.keys(r))));
+    const header = el('tr'); for (const key of keys) header.append(el('th', key.replace(/^\[|\]$/g, ''))); table.append(header);
+    for (const row of rows) { const tr = el('tr'); for (const key of keys) tr.append(el('td', row[key] == null ? '—' : String(row[key]))); table.append(tr); }
+    details.append(table); answer.append(details);
   }
   private async request(route: string, data?: unknown, signal?: AbortSignal): Promise<Response> {
     const headers: Record<string, string> = { 'x-marmiton-visual': this.code };
@@ -122,21 +158,14 @@ export class Visual implements IVisual {
       if (!response.body) throw new Error('Flux indisponible.');
       const reader = response.body.getReader(), decoder = new TextDecoder(); let buffer = '';
       const event = (data: any) => {
-        if (data.type === 'conversation') { this.conversationId = data.id; void this.saveSession(); }
+        if (data.type === 'conversation') { this.conversationId = data.id; this.displayedConversation = data.id; void this.saveSession(); }
         if (data.type === 'status') this.state.textContent = data.text;
         if (data.type === 'delta') { text += data.text; prose.textContent = text; }
         if (data.type === 'replace') { text = data.text; prose.textContent = text; }
         if (data.type === 'warning') answer.append(el('small', data.text));
         if (data.type === 'error') throw new Error(data.text);
         if (data.type === 'done') this.state.textContent = 'Power BI connecté';
-        if (data.type === 'result') {
-          const details = el('details'); details.append(el('summary', 'Sources et calcul'), el('p', data.scope));
-          const table = el('table');
-          const rows = data.rows || [], keys = Array.from(new Set<string>(rows.flatMap((r: Record<string, unknown>) => Object.keys(r))));
-          const header = el('tr'); for (const key of keys) header.append(el('th', key.replace(/^\[|\]$/g, ''))); table.append(header);
-          for (const row of rows) { const tr = el('tr'); for (const key of keys) tr.append(el('td', row[key] == null ? '—' : String(row[key]))); table.append(tr); }
-          details.append(table); answer.append(details);
-        }
+        if (data.type === 'result') this.renderResult(answer, data);
         this.messages.scrollTop = this.messages.scrollHeight;
       };
       try {

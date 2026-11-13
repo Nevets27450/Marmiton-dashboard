@@ -18,12 +18,14 @@ test('Send clicks call chat directly without relying on sandbox-blocked form sub
   const source = readFileSync(new URL('./src/visual.ts', import.meta.url), 'utf8');
   const compiled = ts.transpileModule(source, { compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2020 } }).outputText;
   const calls = []; const exported = {}; const opened = []; const ticket = 'b'.repeat(64), visualToken = 'a'.repeat(64); let polls = 0;
+  const conversationId = '12345678-1234-1234-1234-123456789abc';
   const context = { exports: exported, require: () => ({}), document: { createElement: tag => new Element(tag) }, AbortController, TextDecoder, URL, setTimeout: (fn, ms) => setTimeout(fn, Math.min(ms, 5)), clearTimeout,
     fetch: async (url, options) => {
       calls.push({ url, options });
       if (url.endsWith('/visual/connect')) return Response.json({ visualToken, authorizationUrl: 'https://marmiton-assistant.onrender.com/connect#ticket=' + ticket, expiresIn: 600 }, { status: 201 });
       if (url.endsWith('/status')) return Response.json(++polls === 1 ? { connected: false, awaitingApproval: true } : { connected: true, llmConfigured: true });
-      return new Response('data: {"type":"delta","text":"Avec plaisir !"}\n\ndata: {"type":"done"}\n\n');
+      if (url.endsWith('/chat/history')) return Response.json({ conversationId, messages: [{ question: 'merci', answer: 'Avec plaisir !', rows: [], scope: 'Aucun calcul effectué' }] });
+      return new Response('data: '+JSON.stringify({ type: 'conversation', id: conversationId })+'\n\ndata: {"type":"delta","text":"Avec plaisir !"}\n\ndata: {"type":"done"}\n\n');
     }
   };
   const storageData = new Map();
@@ -63,5 +65,9 @@ test('Send clicks call chat directly without relying on sandbox-blocked form sub
   assert.equal(restoredSend.disabled, false, 'A recreated sandbox restores its connection automatically');
   assert.equal(opened.length, 1, 'Restoration must not reopen Microsoft');
   assert.equal(calls.filter(c => c.url.endsWith('/visual/connect')).length, 1);
+  assert.ok(walk(restoredContainer).some(n => n.textContent === 'merci'));
+  assert.ok(walk(restoredContainer).some(n => n.textContent === 'Avec plaisir !'), 'Messages are rehydrated after changing pages');
+  assert.equal(calls.filter(c => c.url.endsWith('/chat')).length, 1, 'Restoration does not rerun Gemini or Power BI calculations');
+  assert.equal([...storageData.values()][0].includes('Avec plaisir'), false, 'Chat text is not stored in the Power BI cache');
   restored.destroy();
 });
