@@ -1,5 +1,5 @@
 {
-  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.6.0/schema.json",
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.14.0/schema.json",
   "name": "4b032a5b90c5eaab1a9d",
   "position": {
     "x": 600,
@@ -23,8 +23,7 @@
                     "textStyle": {
                       "fontFamily": "Segoe UI",
                       "fontSize": "12pt",
-                      "fontWeight": "normal",
-                      "color": "#29352F"
+                      "color": "#29352f"
                     }
                   }
                 ]

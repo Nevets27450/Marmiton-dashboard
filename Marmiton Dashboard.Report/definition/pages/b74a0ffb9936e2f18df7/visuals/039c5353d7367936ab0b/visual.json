@@ -1,5 +1,5 @@
 {
-  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.6.0/schema.json",
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.14.0/schema.json",
   "name": "039c5353d7367936ab0b",
   "position": {
     "x": 16,
@@ -177,7 +177,7 @@
                           [
                             {
                               "Literal": {
-                                "Value": "'\"RAT\"-vissante pizza aux courgettes'"
+                                "Value": "'\"Clafoutis\" fraises kiwi'"
                               }
                             }
                           ]
@@ -401,5 +401,23 @@
       ]
     },
     "drillFilterOtherVisuals": true
+  },
+  "filterConfig": {
+    "filters": [
+      {
+        "name": "26909857c1d562903cd9",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "recipes"
+              }
+            },
+            "Property": "title"
+          }
+        },
+        "type": "Categorical"
+      }
+    ]
   }
 }

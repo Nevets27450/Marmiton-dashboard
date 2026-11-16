@@ -19,12 +19,12 @@
               {
                 "textRuns": [
                   {
-                    "value": "Marmiton — Vue d’ensemble des recettes",
+                    "value": "Marmiton - Vue d’ensemble des recettes",
                     "textStyle": {
+                      "fontWeight": "bold",
                       "fontFamily": "Segoe UI",
                       "fontSize": "22pt",
-                      "fontWeight": "bold",
-                      "color": "#29352F"
+                      "color": "#29352f"
                     }
                   }
                 ]

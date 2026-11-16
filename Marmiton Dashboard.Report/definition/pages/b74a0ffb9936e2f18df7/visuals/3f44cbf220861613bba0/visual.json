@@ -17,22 +17,17 @@
           "projections": [
             {
               "field": {
-                "Aggregation": {
+                "Measure": {
                   "Expression": {
-                    "Column": {
-                      "Expression": {
-                        "SourceRef": {
-                          "Entity": "recipes"
-                        }
-                      },
-                      "Property": "rating_value"
+                    "SourceRef": {
+                      "Entity": "MESURES_DAX"
                     }
                   },
-                  "Function": 5
+                  "Property": "KPI Recettes selon note"
                 }
               },
-              "queryRef": "Sum(recipes.rating_value)",
-              "nativeQueryRef": "Nombre de rating_value"
+              "queryRef": "MESURES_DAX.KPI Recettes selon note",
+              "nativeQueryRef": "Recettes selon note"
             }
           ]
         }
@@ -41,18 +36,13 @@
         "sort": [
           {
             "field": {
-              "Aggregation": {
+              "Measure": {
                 "Expression": {
-                  "Column": {
-                    "Expression": {
-                      "SourceRef": {
-                        "Entity": "recipes"
-                      }
-                    },
-                    "Property": "rating_value"
+                  "SourceRef": {
+                    "Entity": "MESURES_DAX"
                   }
                 },
-                "Function": 5
+                "Property": "KPI Recettes selon note"
               }
             },
             "direction": "Descending"
@@ -127,8 +117,13 @@
             },
             "text": {
               "expr": {
-                "Literal": {
-                  "Value": "'Recettes notées'"
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "MESURES_DAX"
+                    }
+                  },
+                  "Property": "Titre KPI Recettes selon note"
                 }
               }
             },

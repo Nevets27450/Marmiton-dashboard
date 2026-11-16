@@ -1,5 +1,5 @@
 {
-  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.6.0/schema.json",
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.14.0/schema.json",
   "name": "e5d78c833f0faf5cfdc1",
   "position": {
     "x": 272,
@@ -753,6 +753,20 @@
             }
           ]
         }
+      },
+      {
+        "name": "34029e4a1577476ceba2",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "MESURES_DAX"
+              }
+            },
+            "Property": "Part des recettes par durée"
+          }
+        },
+        "type": "Advanced"
       }
     ],
     "filterSortOrder": "Custom"

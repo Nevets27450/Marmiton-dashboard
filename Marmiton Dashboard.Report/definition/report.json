@@ -1,5 +1,5 @@
 {
-  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/report/3.1.0/schema.json",
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/report/3.3.0/schema.json",
   "themeCollection": {
     "baseTheme": {
       "name": "CY24SU06",
@@ -70,19 +70,9 @@
           "type": "Image"
         },
         {
-          "name": "dashboard4478861003388326.svg",
-          "path": "dashboard4478861003388326.svg",
+          "name": "ChatGPT_Image_24_f_vr._2026,_103353245977130792.png",
+          "path": "ChatGPT_Image_24_f_vr._2026,_103353245977130792.png",
           "type": "Image"
-        },
-        {
-          "name": "database3858173360700805.svg",
-          "path": "database3858173360700805.svg",
-          "type": "Image"
-        },
-        {
-          "name": "R&I_Theme_Augmented_Beauty18974135381543233.json",
-          "path": "R&I_Theme_Augmented_Beauty18974135381543233.json",
-          "type": "CustomTheme"
         },
         {
           "name": "images8637478369040582.png",
@@ -90,9 +80,9 @@
           "type": "Image"
         },
         {
-          "name": "ChatGPT_Image_24_f_vr._2026,_103353245977130792.png",
-          "path": "ChatGPT_Image_24_f_vr._2026,_103353245977130792.png",
-          "type": "Image"
+          "name": "R&I_Theme_Augmented_Beauty18974135381543233.json",
+          "path": "R&I_Theme_Augmented_Beauty18974135381543233.json",
+          "type": "CustomTheme"
         }
       ]
     },
@@ -106,6 +96,17 @@
           "type": "BaseTheme"
         }
       ]
+    },
+    {
+      "name": "marmitonAssistant7E52235DDC224199B7B645E2E662ED14",
+      "type": "CustomVisual",
+      "items": [
+        {
+          "name": "marmitonAssistant7E52235DDC224199B7B645E2E662ED14.pbiviz.json",
+          "path": "marmitonAssistant7E52235DDC224199B7B645E2E662ED14.pbiviz.json",
+          "type": "CustomVisualMetadata"
+        }
+      ]
     }
   ],
   "settings": {
@@ -115,8 +116,7 @@
     "allowChangeFilterTypes": true,
     "allowInlineExploration": true,
     "useEnhancedTooltips": true,
-    "useDefaultAggregateDisplayName": true,
-    "pauseQueries": true
+    "useDefaultAggregateDisplayName": true
   },
   "slowDataSourceSettings": {
     "isCrossHighlightingDisabled": false,

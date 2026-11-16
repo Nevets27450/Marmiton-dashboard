@@ -14,3 +14,7 @@ Ouvrir `Marmiton Dashboard.pbip` dans Power BI Desktop en conservant les dossier
 Les pourcentages utilisent le total de toutes les recettes du modèle. Chaque ingrédient est compté en nombre de recettes distinctes ; leurs pourcentages ne s’additionnent donc pas à 100 %.
 
 Les sauvegardes locales, caches Power BI et exports binaires sont exclus de Git.
+
+## Assistant IA
+
+Le dossier [assistant](assistant/README.md) contient le serveur Node.js et le code du visuel conversationnel. La page Assistant IA intègre le visuel connecté au service HTTPS hébergé sur Render. Le serveur interroge le modèle publié dans Power BI Service avec les droits du compte connecté. Le déploiement est décrit dans [assistant/DEPLOYMENT.md](assistant/DEPLOYMENT.md).
