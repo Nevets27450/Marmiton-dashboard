@@ -10,6 +10,7 @@ Ouvrir `Marmiton Dashboard.pbip` dans Power BI Desktop en conservant les dossier
 
 - `v1.0` : modèle avant optimisation et rapport avant les modifications de design, reconstitués depuis les sauvegardes. Les fichiers de projet nécessaires à l’ouverture proviennent de l’enregistrement PBIP disponible.
 - `v2.0` : modèle optimisé, graphiques en pourcentages, accueil et pages Aperçu / Infos remaniés.
+- `v3.0` : rapport enrichi d’un assistant IA conversationnel intégré, connecté au modèle sémantique publié dans Power BI Service, avec Gemini 3.1 Flash-Lite et un serveur Node.js hébergé sur Render. L’assistant permet d’explorer les données en langage naturel et de consulter les requêtes DAX réellement exécutées.
 
 Les pourcentages utilisent le total de toutes les recettes du modèle. Chaque ingrédient est compté en nombre de recettes distinctes ; leurs pourcentages ne s’additionnent donc pas à 100 %.
 
